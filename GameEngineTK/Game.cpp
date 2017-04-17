@@ -5,11 +5,25 @@
 #include "pch.h"
 #include "Game.h"
 
+#include <PrimitiveBatch.h>		// PrimitiveBatch
+#include <VertexTypes.h>		// VertexPositionColor
+#include <Effects.h>			// BasicEffect
+#include <CommonStates.h>
+
+#include <SimpleMath.h>
+
 extern void ExitGame();
 
 using namespace DirectX;
 
+
 using Microsoft::WRL::ComPtr;
+
+std::unique_ptr<BasicEffect> basicEffect;
+
+ComPtr<ID3D11InputLayout> inputLayout;
+
+std::unique_ptr<PrimitiveBatch<VertexPositionColor>> primitiveBatch;	// VertexPositionColor = 座標と色を持った頂点情報
 
 Game::Game() :
     m_window(0),
@@ -36,6 +50,27 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetFixedTimeStep(true);
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
+
+	// 初期化はここに				
+					// new
+	primitiveBatch = std::make_unique<PrimitiveBatch<VertexPositionColor>>(m_d3dContext.Get());
+																// 普通のポインターに置き換える
+	basicEffect = std::make_unique<BasicEffect>(m_d3dDevice.Get());
+
+	// 縦幅、横幅の設定
+	basicEffect->SetProjection(XMMatrixOrthographicOffCenterRH(0,
+		m_outputWidth, m_outputHeight, 0, 0, 1));
+	basicEffect->SetVertexColorEnabled(true);
+
+	void const* shaderByteCode;
+	size_t byteCodeLength;
+
+	basicEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+	m_d3dDevice->CreateInputLayout(VertexPositionColor::InputElements,
+		VertexPositionColor::InputElementCount,
+		shaderByteCode, byteCodeLength,
+		inputLayout.GetAddressOf());
 }
 
 // Executes the basic game loop.
@@ -56,6 +91,8 @@ void Game::Update(DX::StepTimer const& timer)
 
     // TODO: Add your game logic here.
     elapsedTime;
+
+	// 毎フレーム更新処理はここに
 }
 
 // Draws the scene.
@@ -70,6 +107,22 @@ void Game::Render()
     Clear();
 
     // TODO: Add your rendering code here.
+
+	// 描画処理
+	CommonStates states(m_d3dDevice.Get());
+	m_d3dContext->OMSetBlendState(states.Opaque(), nullptr, 0xFFFFFFFF);
+	m_d3dContext->OMSetDepthStencilState(states.DepthNone(), 0);
+	m_d3dContext->RSSetState(states.CullNone());
+
+	basicEffect->Apply(m_d3dContext.Get());
+	m_d3dContext->IASetInputLayout(inputLayout.Get());
+
+	primitiveBatch->Begin();
+	primitiveBatch->DrawLine(
+		VertexPositionColor(SimpleMath::Vector3(0, 0, 0), SimpleMath::Color(1, 1, 1)),
+		VertexPositionColor(SimpleMath::Vector3(800, 600, 0), SimpleMath::Color(1, 1, 1))
+	);
+	primitiveBatch->End();
 
     Present();
 }

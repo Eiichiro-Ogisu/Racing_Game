@@ -18,6 +18,7 @@ public:
     // Initialization and management
     void Initialize(HWND window, int width, int height);
 
+	// 時間のカウント
     // Basic game loop
     void Tick();
 
@@ -62,4 +63,6 @@ private:
 
     // Rendering loop timer.
     DX::StepTimer                                   m_timer;
+
+	// メンバを追加していく
 };
