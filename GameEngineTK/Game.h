@@ -5,6 +5,13 @@
 #pragma once
 
 #include "StepTimer.h"
+#include "DebugCamera.h"
+
+#include <PrimitiveBatch.h>		// PrimitiveBatch
+#include <VertexTypes.h>		// VertexPositionColor
+#include <Effects.h>			// BasicEffect
+#include <CommonStates.h>
+#include <SimpleMath.h>
 
 
 // A basic game implementation that creates a D3D11 device and
@@ -65,4 +72,13 @@ private:
     DX::StepTimer                                   m_timer;
 
 	// ƒƒ“ƒo‚ğ’Ç‰Á‚µ‚Ä‚¢‚­
+	std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionNormal>> m_batch;
+	std::unique_ptr<DirectX::BasicEffect> m_effect;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
+
+	DirectX::SimpleMath::Matrix m_world;
+	DirectX::SimpleMath::Matrix m_view;
+	DirectX::SimpleMath::Matrix m_proj;
+
+	std::unique_ptr<DebugCamera> m_debugCamera;
 };
