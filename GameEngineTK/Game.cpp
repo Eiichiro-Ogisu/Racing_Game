@@ -60,7 +60,7 @@ void Game::Initialize(HWND window, int width, int height)
 	m_view = Matrix::CreateLookAt(Vector3(0.f, 0.f, 5.f),
 		Vector3::Zero, Vector3::UnitY);	// (0,1,0)と同じ
 	m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
-		float(m_outputWidth) / float(m_outputWidth), 0.1f, 10.f);
+		float(m_outputWidth) / float(m_outputHeight), 0.1f, 500.f);
 
 	m_effect->SetView(m_view);
 	m_effect->SetProjection(m_proj);
@@ -79,6 +79,19 @@ void Game::Initialize(HWND window, int width, int height)
 
 	// デバッグカメラ生成
 	m_debugCamera = std::make_unique<DebugCamera>(m_outputWidth,m_outputHeight);
+
+	// エフェクトファクトリ生成
+	m_factory = std::make_unique<EffectFactory>(m_d3dDevice.Get());
+
+	// テクスチャの読み込みパス指定
+	m_factory->SetDirectory(L"Resources");
+
+	// モデルの読み込み
+	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(),L"Resources\\Ground1m.cmo",*m_factory);
+
+	m_modelSkydome = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\Skydome.cmo", *m_factory);
+	
+	m_skydome2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\Skydome2.cmo", *m_factory);
 }
 
 // Executes the basic game loop.
@@ -95,6 +108,9 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& timer)
 {
+
+	m_angle++;
+
     float elapsedTime = float(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
@@ -105,6 +121,29 @@ void Game::Update(DX::StepTimer const& timer)
 
 	// ビュー行列を取得
 	m_view = m_debugCamera->GetCameraMatrix();
+
+
+
+	for (int i = 0; i < 10; i++)
+	{
+		// ヨー(方位角)
+		Matrix rotmaty = Matrix::CreateRotationY(XMConvertToRadians(36 * (i + 1)) + m_angle);
+
+		Matrix transmat = Matrix::CreateTranslation(20.0f, 0, 0);
+
+		m_worldBall[i] = transmat * rotmaty;
+	}
+
+	for (int i = 0; i < 10; i++)
+	{
+		// ヨー(方位角)
+		Matrix rotmaty = Matrix::CreateRotationY(XMConvertToRadians(36 * (i + 1)) - m_angle);
+
+		Matrix transmat = Matrix::CreateTranslation(40.0f, 0, 0);
+
+		m_worldBall2[i] = transmat * rotmaty;
+	}
+
 }
 
 // Draws the scene.
@@ -141,36 +180,31 @@ void Game::Render()
 	// 描画処理
 	DirectX::CommonStates m_states(m_d3dDevice.Get());
 	
-	m_d3dContext->OMSetBlendState(m_states.Opaque(), nullptr, 0xFFFFFFFF);
-	m_d3dContext->OMSetDepthStencilState(m_states.DepthNone(), 0);
-	m_d3dContext->RSSetState(m_states.CullNone());
+	// 地面モデルの描画
+	m_modelGround->Draw(m_d3dContext.Get(), m_states, m_world, m_view, m_proj);
 
-	m_effect->SetView(m_view);
-	m_effect->SetProjection(m_proj);
-	m_effect->SetWorld(m_world);
+	m_modelSkydome->Draw(m_d3dContext.Get(), m_states, m_world, m_view, m_proj);
 
-	m_effect->Apply(m_d3dContext.Get());
-	m_d3dContext->IASetInputLayout(m_inputLayout.Get());
 
-	m_batch->Begin();
-	//m_batch->DrawLine(
-	//	VertexPositionColor(SimpleMath::Vector3(0, 0, 0), SimpleMath::Color(1, 1, 1)),
-	//	VertexPositionColor(SimpleMath::Vector3(800, 600, 0), SimpleMath::Color(1, 1, 1))
-	//);
+	for (int i = 0; i < 10; i++)
+	{
+		m_skydome2->Draw(m_d3dContext.Get(), m_states, m_worldBall[i], m_view, m_proj);
 
-	VertexPositionColor v1(Vector3(0.f, 0.5f, 0.5f), Colors::Yellow);
-	VertexPositionColor v2(Vector3(0.5f, -0.5f, 0.5f), Colors::Yellow);
-	VertexPositionColor v3(Vector3(-0.5f, -0.5f, 0.5f), Colors::Yellow);
+		m_skydome2->Draw(m_d3dContext.Get(), m_states, m_worldBall2[i], m_view, m_proj);
 
-	//VertexPositionColor v1(Vector3(0.f, 500.0f, 0), Colors::Yellow);
-	//VertexPositionColor v2(Vector3(500.0f, 0, 0), Colors::Yellow);
-	//VertexPositionColor v3(Vector3(0, 0, 0), Colors::Yellow);
+	}
+	for (int i = 0; i < 200; i++)
+	{
+		for (int j = 0; j < 200; j++)
+		{
+			Matrix transmat = Matrix::CreateTranslation(i - 100, 0, j - 100);
 
-	//m_batch->DrawTriangle(v1, v2, v3);
+			m_worldGround = transmat;
 
-	m_batch->DrawIndexed(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST, indices, 6, vertices,4);
+			m_modelGround->Draw(m_d3dContext.Get(), m_states, m_worldGround, m_view, m_proj);
+		}
+	}
 
-	m_batch->End();
 
     Present();
 }

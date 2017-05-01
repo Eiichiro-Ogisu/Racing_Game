@@ -12,6 +12,7 @@
 #include <Effects.h>			// BasicEffect
 #include <CommonStates.h>
 #include <SimpleMath.h>
+#include <Model.h>
 
 
 // A basic game implementation that creates a D3D11 device and
@@ -81,4 +82,26 @@ private:
 	DirectX::SimpleMath::Matrix m_proj;
 
 	std::unique_ptr<DebugCamera> m_debugCamera;
+
+	// エフェクトファクトリ
+	std::unique_ptr<DirectX::EffectFactory> m_factory;
+	
+	// 背景モデル
+	std::unique_ptr<DirectX::Model> m_modelGround;
+
+	std::unique_ptr<DirectX::Model> m_ground2[100];
+
+	std::unique_ptr<DirectX::Model> m_modelSkydome;
+
+	// モデル
+	std::unique_ptr<DirectX::Model> m_skydome2;
+
+	// 球ワールド行列
+	DirectX::SimpleMath::Matrix m_worldBall[10];
+
+	DirectX::SimpleMath::Matrix m_worldBall2[10];
+
+	DirectX::SimpleMath::Matrix m_worldGround;
+
+	int m_angle = 0;
 };
