@@ -87,11 +87,26 @@ void Game::Initialize(HWND window, int width, int height)
 	m_factory->SetDirectory(L"Resources");
 
 	// モデルの読み込み
-	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(),L"Resources\\Ground1m.cmo",*m_factory);
+	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(),L"Resources\\Ground200m.cmo",*m_factory);
 
 	m_modelSkydome = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\Skydome.cmo", *m_factory);
 	
 	m_skydome2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\Skydome2.cmo", *m_factory);
+
+	m_teapot = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\teapot.cmo", *m_factory);
+
+
+
+	// ティーポットのワールド座標設定
+	for (int i = 0; i < 20; i++)
+	{
+		Matrix scaleMat = Matrix::CreateScale(2.0f);
+
+		Matrix transMat = Matrix::CreateTranslation(rand()%200 - 100, 0, rand()%200 - 100);
+
+		buf[i] = transMat;
+	}
+
 }
 
 // Executes the basic game loop.
@@ -108,9 +123,6 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& timer)
 {
-
-	m_angle++;
-
     float elapsedTime = float(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
@@ -122,26 +134,35 @@ void Game::Update(DX::StepTimer const& timer)
 	// ビュー行列を取得
 	m_view = m_debugCamera->GetCameraMatrix();
 
+	//// ティーポットのワールド座標設定
+	//for (int i = 0; i < 20; i++)
+	//{
+	//	Matrix scaleMat = Matrix::CreateScale(1.0f);
+
+	//	Matrix transRot = Matrix::CreateRotationY(XMConvertToRadians(i*18));
+
+	//	Matrix transMat = Matrix::CreateTranslation(rand()%100+1, 0, 0);
+
+	//	m_worldTeapot[i] = scaleMat	* transMat * transRot;
+	//}
+
+	m_angle++;
+
+	//m_scale2++;
 
 
-	for (int i = 0; i < 10; i++)
+
+	m_scale = Matrix::CreateScale(m_scale2);
+
+	Matrix translation;
+
+	Matrix transRotY = Matrix::CreateRotationY(XMConvertToRadians(m_angle));
+
+	for (int i = 0; i < 20; i++)
 	{
-		// ヨー(方位角)
-		Matrix rotmaty = Matrix::CreateRotationY(XMConvertToRadians(36 * (i + 1)) + m_angle);
+		translation = /*m_scale **/ transRotY * buf[i];
 
-		Matrix transmat = Matrix::CreateTranslation(20.0f, 0, 0);
-
-		m_worldBall[i] = transmat * rotmaty;
-	}
-
-	for (int i = 0; i < 10; i++)
-	{
-		// ヨー(方位角)
-		Matrix rotmaty = Matrix::CreateRotationY(XMConvertToRadians(36 * (i + 1)) - m_angle);
-
-		Matrix transmat = Matrix::CreateTranslation(40.0f, 0, 0);
-
-		m_worldBall2[i] = transmat * rotmaty;
+		m_worldTeapot[i] = translation;
 	}
 
 }
@@ -186,25 +207,20 @@ void Game::Render()
 	m_modelSkydome->Draw(m_d3dContext.Get(), m_states, m_world, m_view, m_proj);
 
 
-	for (int i = 0; i < 10; i++)
+	//for (int i = 0; i < 10; i++)
+	//{
+	//	m_skydome2->Draw(m_d3dContext.Get(), m_states, m_worldBall[i], m_view, m_proj);
+
+	//	m_skydome2->Draw(m_d3dContext.Get(), m_states, m_worldBall2[i], m_view, m_proj);
+
+	//}
+			
+	m_modelGround->Draw(m_d3dContext.Get(), m_states, m_worldGround, m_view, m_proj);
+	// ティーポットのモデルの描画
+	for (int i = 0; i < 20; i++)
 	{
-		m_skydome2->Draw(m_d3dContext.Get(), m_states, m_worldBall[i], m_view, m_proj);
-
-		m_skydome2->Draw(m_d3dContext.Get(), m_states, m_worldBall2[i], m_view, m_proj);
-
+		m_teapot->Draw(m_d3dContext.Get(), m_states, m_worldTeapot[i], m_view, m_proj);
 	}
-	for (int i = 0; i < 200; i++)
-	{
-		for (int j = 0; j < 200; j++)
-		{
-			Matrix transmat = Matrix::CreateTranslation(i - 100, 0, j - 100);
-
-			m_worldGround = transmat;
-
-			m_modelGround->Draw(m_d3dContext.Get(), m_states, m_worldGround, m_view, m_proj);
-		}
-	}
-
 
     Present();
 }

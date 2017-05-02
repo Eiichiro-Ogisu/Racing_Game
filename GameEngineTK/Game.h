@@ -96,6 +96,9 @@ private:
 	// モデル
 	std::unique_ptr<DirectX::Model> m_skydome2;
 
+	// ティーポットモデル
+	std::unique_ptr<DirectX::Model> m_teapot;
+
 	// 球ワールド行列
 	DirectX::SimpleMath::Matrix m_worldBall[10];
 
@@ -103,5 +106,14 @@ private:
 
 	DirectX::SimpleMath::Matrix m_worldGround;
 
+	// ティーポットワールド行列
+	DirectX::SimpleMath::Matrix m_worldTeapot[20];
+
+	DirectX::SimpleMath::Matrix buf[20];
+
 	int m_angle = 0;
+
+	DirectX::SimpleMath::Matrix m_scale;
+
+	float m_scale2;
 };
