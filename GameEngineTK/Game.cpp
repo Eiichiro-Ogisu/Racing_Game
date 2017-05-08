@@ -95,18 +95,20 @@ void Game::Initialize(HWND window, int width, int height)
 
 	m_teapot = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\teapot.cmo", *m_factory);
 
-
+	m_modelHead = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\head.cmo", *m_factory);
 
 	// ティーポットのワールド座標設定
 	for (int i = 0; i < 20; i++)
 	{
+		m_x[i] = rand() % 200 - 100;
+
+		m_z[i] = rand() % 200 - 100;
+
 		Matrix scaleMat = Matrix::CreateScale(2.0f);
 
-		Matrix transMat = Matrix::CreateTranslation(rand()%200 - 100, 0, rand()%200 - 100);
-
-		buf[i] = transMat;
+		buf[i] = Matrix::CreateTranslation(m_x[i], 0, m_z[i]);
 	}
-
+	m_keyboard = std::make_unique<Keyboard>();
 }
 
 // Executes the basic game loop.
@@ -123,6 +125,8 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& timer)
 {
+	g_key = m_keyboard->GetState();
+
     float elapsedTime = float(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
@@ -134,25 +138,29 @@ void Game::Update(DX::StepTimer const& timer)
 	// ビュー行列を取得
 	m_view = m_debugCamera->GetCameraMatrix();
 
-	//// ティーポットのワールド座標設定
-	//for (int i = 0; i < 20; i++)
-	//{
-	//	Matrix scaleMat = Matrix::CreateScale(1.0f);
-
-	//	Matrix transRot = Matrix::CreateRotationY(XMConvertToRadians(i*18));
-
-	//	Matrix transMat = Matrix::CreateTranslation(rand()%100+1, 0, 0);
-
-	//	m_worldTeapot[i] = scaleMat	* transMat * transRot;
-	//}
-
 	m_angle++;
 
-	//m_scale2++;
+
+	if (m_scale2 >= 300)
+	{
+		scaleFlag = false;
+	}
+	else if (m_scale2 <= 0)
+	{
+		scaleFlag = true;
+	}
+
+	if (scaleFlag == false)
+	{
+		m_scale2--;
+	}
+	else if(scaleFlag == true)
+	{
+		m_scale2++;
+	}
 
 
-
-	m_scale = Matrix::CreateScale(m_scale2);
+	m_scale = Matrix::CreateScale(m_scale2 / 60);
 
 	Matrix translation;
 
@@ -160,11 +168,70 @@ void Game::Update(DX::StepTimer const& timer)
 
 	for (int i = 0; i < 20; i++)
 	{
-		translation = /*m_scale **/ transRotY * buf[i];
+		translation = m_scale * transRotY * buf[i];
 
 		m_worldTeapot[i] = translation;
+
+
+
+		buf[i] = Matrix::CreateTranslation(m_x[i]*worldTimer,0,m_z[i]*worldTimer);
 	}
 
+	if (worldTimer >= 0)
+	{
+		worldTimer -= 0.1 / 60;
+	}
+
+	// キー操作
+	if (g_key.W)
+	{
+		// 移動量
+		Vector3 moveV = Vector3(0.0f, 0.0f, -0.1f);
+
+		// 移動量ベクトルを自機の角度分回転する
+		moveV = Vector3::TransformNormal(moveV, m_worldHead);
+
+		tankPos += moveV;
+	}
+
+	if (g_key.S)
+	{
+		// 移動量
+		Vector3 moveV = Vector3(0.0f, 0.0f, 0.1f);
+
+		// 移動量ベクトルを自機の角度分回転する
+		moveV = Vector3::TransformNormal(moveV, m_worldHead);
+
+		tankPos += moveV;
+
+	}
+
+	if (g_key.A)
+	{
+		// 回転量
+		float rot = 0.03f;
+
+		tankRot += rot;
+	}
+
+	if (g_key.D)
+	{
+		// 回転量
+		float rot = -0.03f;
+
+		tankRot += rot;
+	}
+
+
+	{// 自機のワールド行列を計算
+
+		Matrix rot = Matrix::CreateRotationY(tankRot);
+
+		Matrix trans = Matrix::CreateTranslation(tankPos);
+
+		m_worldHead = rot * trans;
+
+	}
 }
 
 // Draws the scene.
@@ -221,6 +288,10 @@ void Game::Render()
 	{
 		m_teapot->Draw(m_d3dContext.Get(), m_states, m_worldTeapot[i], m_view, m_proj);
 	}
+
+	m_modelHead->Draw(m_d3dContext.Get(), m_states, m_worldHead, m_view, m_proj);
+
+	// タンクの平行移動
 
     Present();
 }

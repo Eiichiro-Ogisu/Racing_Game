@@ -13,6 +13,7 @@
 #include <CommonStates.h>
 #include <SimpleMath.h>
 #include <Model.h>
+#include <Keyboard.h>
 
 
 // A basic game implementation that creates a D3D11 device and
@@ -93,6 +94,8 @@ private:
 
 	std::unique_ptr<DirectX::Model> m_modelSkydome;
 
+	std::unique_ptr<DirectX::Model> m_modelHead;
+
 	// モデル
 	std::unique_ptr<DirectX::Model> m_skydome2;
 
@@ -111,9 +114,33 @@ private:
 
 	DirectX::SimpleMath::Matrix buf[20];
 
+	// 自機のワールド行列
+	DirectX::SimpleMath::Matrix m_worldHead = DirectX::SimpleMath::Matrix::Identity;
+
 	int m_angle = 0;
 
 	DirectX::SimpleMath::Matrix m_scale;
 
-	float m_scale2;
+	float m_scale2 = 0;
+
+	bool scaleFlag = false;
+
+	float m_length;
+
+	float worldTimer = 1.0f;
+
+	int m_x[20];
+
+	int m_z[20];
+
+	DirectX::SimpleMath::Matrix transBuf[20];
+
+	std::unique_ptr<DirectX::Keyboard> m_keyboard;
+
+	DirectX::Keyboard::State g_key;
+
+	// 自機の座標
+	DirectX::SimpleMath::Vector3 tankPos;
+
+	float tankRot = 0.0f;
 };

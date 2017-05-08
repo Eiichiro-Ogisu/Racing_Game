@@ -4,6 +4,7 @@
 
 #include "pch.h"
 #include "Game.h"
+#include <Keyboard.h>
 
 using namespace DirectX;
 
@@ -124,6 +125,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
+	case WM_KEYDOWN:
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		Keyboard::ProcessMessage(message, wParam, lParam);
+		break;
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
         EndPaint(hWnd, &ps);
@@ -177,6 +183,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_ACTIVATEAPP:
+		Keyboard::ProcessMessage(message, wParam, lParam);
         if (game)
         {
             if (wParam)
