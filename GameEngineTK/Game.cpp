@@ -57,10 +57,6 @@ void Game::Initialize(HWND window, int width, int height)
 	//	m_outputWidth, m_outputHeight, 0, 0, 1));
 
 	// 3D用
-	m_view = Matrix::CreateLookAt(Vector3(0.f, 0.f, 5.f),
-		Vector3::Zero, Vector3::UnitY);	// (0,1,0)と同じ
-	m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
-		float(m_outputWidth) / float(m_outputHeight), 0.1f, 500.f);
 
 	m_effect->SetView(m_view);
 	m_effect->SetProjection(m_proj);
@@ -109,6 +105,8 @@ void Game::Initialize(HWND window, int width, int height)
 		buf[i] = Matrix::CreateTranslation(m_x[i], 0, m_z[i]);
 	}
 	m_keyboard = std::make_unique<Keyboard>();
+
+	m_camera = std::make_unique<FollowCamera>(m_outputWidth,m_outputHeight);
 }
 
 // Executes the basic game loop.
@@ -132,11 +130,28 @@ void Game::Update(DX::StepTimer const& timer)
     // TODO: Add your game logic here.
     elapsedTime;
 
-	// 毎フレーム更新処理はここに
-	m_debugCamera->Update();
+	{// 自機に追従するカメラ
+		m_camera->SetTargetPos(tankPos);
+
+		m_camera->SetTargetAngle(tankRot);
+
+		m_camera->SetFovY(XMConvertToRadians(60.0f));
+
+		m_camera->SetAspect((float)m_outputWidth / m_outputHeight);
+
+		m_camera->SetNearclip(0.01f);
+
+		m_camera->SetFarclip(1000.0f);
+
+		m_camera->SetUpVec(Vector3(0, 1, 0));
+
+		m_camera->Update();
+	}
 
 	// ビュー行列を取得
-	m_view = m_debugCamera->GetCameraMatrix();
+	m_view = m_camera->GetViewMatrix();
+	m_proj = m_camera->GetProjectionMatrix();
+
 
 	m_angle++;
 

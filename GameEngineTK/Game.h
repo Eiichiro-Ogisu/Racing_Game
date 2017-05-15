@@ -6,6 +6,8 @@
 
 #include "StepTimer.h"
 #include "DebugCamera.h"
+#include "Camera.h"
+#include "FollowCamera.h"
 
 #include <PrimitiveBatch.h>		// PrimitiveBatch
 #include <VertexTypes.h>		// VertexPositionColor
@@ -143,4 +145,7 @@ private:
 	DirectX::SimpleMath::Vector3 tankPos;
 
 	float tankRot = 0.0f;
+
+	// ÉJÉÅÉâ
+	std::unique_ptr<FollowCamera> m_camera;
 };
