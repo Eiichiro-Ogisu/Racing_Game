@@ -137,7 +137,7 @@ private:
 
 	DirectX::SimpleMath::Matrix transBuf[20];
 
-	std::unique_ptr<DirectX::Keyboard> m_keyboard;
+	std::unique_ptr<DirectX::Keyboard> _keyboard;
 
 	DirectX::Keyboard::State g_key;
 

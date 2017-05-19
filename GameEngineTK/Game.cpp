@@ -104,9 +104,15 @@ void Game::Initialize(HWND window, int width, int height)
 
 		buf[i] = Matrix::CreateTranslation(m_x[i], 0, m_z[i]);
 	}
-	m_keyboard = std::make_unique<Keyboard>();
 
+	// キーボードの初期化
+	_keyboard = std::make_unique<Keyboard>();
+
+	// カメラの生成
 	m_camera = std::make_unique<FollowCamera>(m_outputWidth,m_outputHeight);
+
+	// カメラにキーボード設置
+	m_camera->SetKeyboard(_keyboard.get());
 }
 
 // Executes the basic game loop.
@@ -123,7 +129,7 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& timer)
 {
-	g_key = m_keyboard->GetState();
+	g_key = _keyboard->GetState();
 
     float elapsedTime = float(timer.GetElapsedSeconds());
 

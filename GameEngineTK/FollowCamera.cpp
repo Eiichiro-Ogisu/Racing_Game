@@ -13,28 +13,97 @@ FollowCamera::FollowCamera(int width, int height)
 	_targetPos = Vector3::Zero;
 
 	_targetAngle = 0.0;
+
+	_keyboard = nullptr;
+	
+	isFPS = false;
+
+	InitializeTPS();
 }
 
 void FollowCamera::Update()
 {
-	// 視点,参照点
+	Vector3 eyePos, refPos;
+
+	// キ-ボードの状態
+	Keyboard::State keyboardState = _keyboard->GetState();
+
+	m_keyboardTracker.Update(keyboardState);
+
+	// Cキーを押すごとに切り替え
+	if (m_keyboardTracker.IsKeyPressed(Keyboard::Keys::C))
+	{
+		// フラグを切り替え
+		isFPS = !isFPS;
+
+		if (!isFPS)
+		{
+			InitializeTPS();
+		}
+	}
+
+
+	// 視点(自機の目の位置)
 	Vector3 eyepos, refpos;
+	if (isFPS)
+	{
+		Vector3 position;
 
-	// 自機の上空2mを参照点とする
-	refpos = _targetPos + Vector3(0, 2, 0);
+		position = _targetPos + Vector3(0, 0.2f, 0);
 
-	// 参照点と視点の差分のベクトル
-	Vector3 cameraV(0, 0, CAMERA_DISTANCE);
+		// 参照点から視点への差分
+		Vector3 cameraV(0, 0, -CAMERA_DISTANCE);
 
-	// 自機の後ろに回り込むための回転行列を生成
-	Matrix rotmat = Matrix::CreateRotationY(_targetAngle);
+		// 自機の後ろに回り込むための回転
+		Matrix rotmat = Matrix::CreateRotationY(_targetAngle);
 
-	// 差分ベクトルを回転
-	cameraV = Vector3::TransformNormal(cameraV, rotmat);
+		// 差分ベクトルを回転させる
+		cameraV = Vector3::TransformNormal(cameraV, rotmat);
 
-	// カメラ座標を計算
-	eyepos = refpos + cameraV;
+		// 視点
+		eyepos = position + cameraV * 0.1f;
 
+		// 参照点
+		refpos = position + cameraV;
+
+		//// カメラ座標を計算
+		//eyepos = _targetPos + Vector3(0, 0.3, 0);
+
+		//// 前方移動用ベクトル
+		//Vector3 cameraV(0, 0, -CAMERA_DISTANCE);
+
+		//Matrix rotmat = Matrix::CreateRotationY(_targetAngle);
+
+		//cameraV = Vector3::TransformNormal(cameraV, rotmat);
+
+		//eyepos = position + cameraV *0.1f;
+
+		//// 参照点の設定
+		//refpos = position + cameraV;
+	}
+
+	if (isFPS != true)
+	{
+		// 自機の上空2mを参照点とする
+		refpos = _targetPos + Vector3(0, 2, 0);
+
+		// 参照点と視点の差分のベクトル
+		Vector3 cameraV(0, 0, CAMERA_DISTANCE);
+
+		// 自機の後ろに回り込むための回転行列を生成
+		Matrix rotmat = Matrix::CreateRotationY(_targetAngle);
+
+		// 差分ベクトルを回転
+		cameraV = Vector3::TransformNormal(cameraV, rotmat);
+
+		// カメラ座標を計算
+		eyepos = refpos + cameraV;
+
+		// ゴム紐カメラ
+		eyepos = m_eyePos + (eyepos - m_eyePos) *0.05f;
+
+		refpos = m_refPos + (refpos - m_refPos)* 0.2f;
+	}
 	SetEyePos(eyepos);
 
 	SetRefPos(refpos);
@@ -43,7 +112,31 @@ void FollowCamera::Update()
 	Camera::Update();
 }
 
-void FollowCamera::SetTargetPos(DirectX::SimpleMath::Vector3 targetPos)
+void FollowCamera::InitializeTPS()
+{
+	Vector3 eyePos, refPos;
+
+	// 自機の情報2mの位置を捉える
+	refPos = _targetPos + Vector3(0, 2, 0);
+
+	// 参照点から視点への差分
+	Vector3 cameraV(0, 0, CAMERA_DISTANCE);
+
+	// 自機の後ろに回り込むための回転
+	Matrix rotmat = Matrix::CreateRotationY(_targetAngle);
+
+	// 差分ベクトルを回転させる
+	cameraV = Vector3::TransformNormal(cameraV, rotmat);
+
+	// 始点座標を計算
+	eyePos = refPos + cameraV;
+
+	SetEyePos(eyePos);
+
+	SetRefPos(refPos);
+}
+
+void FollowCamera::SetTargetPos(DirectX::SimpleMath::Vector3  & targetPos)
 {
 	_targetPos = targetPos;
 }
@@ -51,4 +144,8 @@ void FollowCamera::SetTargetPos(DirectX::SimpleMath::Vector3 targetPos)
 void FollowCamera::SetTargetAngle(float targetAngles)
 {
 	_targetAngle = targetAngles;
+}
+void FollowCamera::SetKeyboard(Keyboard* keyboard)
+{
+	_keyboard = keyboard;
 }
