@@ -5,6 +5,7 @@
 
 #include "Camera.h"
 #include <Keyboard.h>
+#include "DXTKResouces.h"
 
 class FollowCamera :public Camera
 {
@@ -22,13 +23,13 @@ public:
 	void InitializeTPS();
 
 	// 追従対象の座標をセット
-	void SetTargetPos(DirectX::SimpleMath::Vector3 & targetPos);
+	void SetTargetPos(const DirectX::SimpleMath::Vector3 & targetPos);
 
 	// 追従対象の角度をセット
 	void SetTargetAngle(float targetAngles);
 
 	// キーボードをセット
-	void SetKeyboard(DirectX::Keyboard* keyboard);
+	//void SetKeyboard(DirectX::Keyboard* keyboard);
 
 protected:
 	// 自機の座標
@@ -37,11 +38,11 @@ protected:
 	// 追従対象の回転角
 	float _targetAngle;
 
-	// キーボード
-	DirectX::Keyboard* _keyboard;
+	//// キーボード
+	//DirectX::Keyboard* _keyboard;
 
-	// キーボードトラッカー
-	DirectX::Keyboard::KeyboardStateTracker m_keyboardTracker;
+	//// キーボードトラッカー
+	//DirectX::Keyboard::KeyboardStateTracker m_keyboardTracker;
 
 	bool isFPS = false;
 };

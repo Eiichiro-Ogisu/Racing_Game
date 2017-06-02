@@ -4,10 +4,13 @@
 
 #pragma once
 
+#include "DXTKResouces.h"
 #include "StepTimer.h"
 #include "DebugCamera.h"
 #include "Camera.h"
 #include "FollowCamera.h"
+#include "Obj3d.h"
+#include "Player.h"
 
 #include <PrimitiveBatch.h>		// PrimitiveBatch
 #include <VertexTypes.h>		// VertexPositionColor
@@ -16,6 +19,7 @@
 #include <SimpleMath.h>
 #include <Model.h>
 #include <Keyboard.h>
+#include <vector>
 
 
 // A basic game implementation that creates a D3D11 device and
@@ -23,6 +27,20 @@
 class Game
 {
 public:
+
+	// 自機パーツ
+	enum PLAYER_PARTS
+	{
+		PLAYER_PARTS_LEG,
+		PLAYER_PARTS_BODY,
+		PLAYER_PARTS_BATTERY,
+		PLAYER_PARTS_BATTERY2,
+		PLAYER_PARTS_HAND,
+		PLAYER_PARTS_HAND2,
+		PLAYER_PARTS_HEAD,
+
+		PLAYER_PARTS_NUM
+	};
 
     Game();
 
@@ -86,7 +104,7 @@ private:
 
 	std::unique_ptr<DebugCamera> m_debugCamera;
 
-	// エフェクトファクトリ
+	//// エフェクトファクトリ
 	std::unique_ptr<DirectX::EffectFactory> m_factory;
 	
 	// 背景モデル
@@ -94,9 +112,10 @@ private:
 
 	std::unique_ptr<DirectX::Model> m_ground2[100];
 
-	std::unique_ptr<DirectX::Model> m_modelSkydome;
+	// 天球モデル
+	Obj3d m_objSkydome;
 
-	std::unique_ptr<DirectX::Model> m_modelHead;
+	//std::unique_ptr<DirectX::Model> m_modelHead;
 
 	// モデル
 	std::unique_ptr<DirectX::Model> m_skydome2;
@@ -116,8 +135,17 @@ private:
 
 	DirectX::SimpleMath::Matrix buf[20];
 
-	// 自機のワールド行列
-	DirectX::SimpleMath::Matrix m_worldHead = DirectX::SimpleMath::Matrix::Identity;
+	//// 自機のワールド行列
+	//DirectX::SimpleMath::Matrix m_worldHead = DirectX::SimpleMath::Matrix::Identity;
+
+	//// 自機のワールド行列2
+	//DirectX::SimpleMath::Matrix m_worldHead2 = DirectX::SimpleMath::Matrix::Identity;
+
+	// 自機の3dオブジェクト
+	//std::vector<Obj3d> m_objPlayer1;
+	Obj3d _player2;
+
+	//std::vector<Obj3d> m_objPlayer;
 
 	int m_angle = 0;
 
@@ -135,11 +163,18 @@ private:
 
 	int m_z[20];
 
+	float _shortRangeAttackRot = 0;
+
 	DirectX::SimpleMath::Matrix transBuf[20];
 
-	std::unique_ptr<DirectX::Keyboard> _keyboard;
+	//std::unique_ptr<DirectX::Keyboard> _keyboard;
 
-	DirectX::Keyboard::State g_key;
+	// ここ危ない
+	//DirectX::Keyboard::KeyboardStateTracker m_PlayerKey;
+
+	Player* _player;
+
+	//DirectX::Keyboard::State g_key;
 
 	// 自機の座標
 	DirectX::SimpleMath::Vector3 tankPos;

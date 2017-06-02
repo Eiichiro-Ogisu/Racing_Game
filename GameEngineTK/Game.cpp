@@ -46,7 +46,28 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
 
-	// 初期化はここに				
+	// 初期化はここに	
+	// DXTKを管理するインスタンスを取得
+	DXTK::DXTKResources& dxtk = DXTK::DXTKResources::singleton();
+
+	dxtk.Initializer(m_d3dDevice.Get(),m_d3dContext.Get());
+
+	// キーボードの初期化
+	//_keyboard = std::make_unique<Keyboard>();
+	// カメラの生成
+	m_camera = std::make_unique<FollowCamera>(m_outputWidth, m_outputHeight);
+	
+	// 3dオブジェクトの静的メンバを初期化
+	Obj3d::InitializeStatic(m_d3dDevice, m_d3dContext, m_camera.get());
+
+	// プレイヤーの生成 
+	_player = new Player();
+
+
+	// カメラにキーボード設置
+	//m_camera->SetKeyboard(_keyboard.get());
+
+
 					// new
 	m_batch = std::make_unique<PrimitiveBatch<VertexPositionNormal>>(m_d3dContext.Get());
 																// 普通のポインターに置き換える
@@ -74,24 +95,24 @@ void Game::Initialize(HWND window, int width, int height)
 		m_inputLayout.GetAddressOf());
 
 	// デバッグカメラ生成
-	m_debugCamera = std::make_unique<DebugCamera>(m_outputWidth,m_outputHeight);
+	//m_debugCamera = std::make_unique<DebugCamera>(m_outputWidth,m_outputHeight);
 
-	// エフェクトファクトリ生成
+	 //エフェクトファクトリ生成
 	m_factory = std::make_unique<EffectFactory>(m_d3dDevice.Get());
 
-	// テクスチャの読み込みパス指定
+	 //テクスチャの読み込みパス指定
 	m_factory->SetDirectory(L"Resources");
 
 	// モデルの読み込み
 	m_modelGround = Model::CreateFromCMO(m_d3dDevice.Get(),L"Resources\\Ground200m.cmo",*m_factory);
 
-	m_modelSkydome = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\Skydome.cmo", *m_factory);
+	m_objSkydome.LoadModel(L"Resources\\Skydome.cmo");
 	
 	m_skydome2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\Skydome2.cmo", *m_factory);
 
 	m_teapot = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\teapot.cmo", *m_factory);
 
-	m_modelHead = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\head.cmo", *m_factory);
+	//m_modelHead = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\head.cmo", *m_factory);
 
 	// ティーポットのワールド座標設定
 	for (int i = 0; i < 20; i++)
@@ -105,14 +126,67 @@ void Game::Initialize(HWND window, int width, int height)
 		buf[i] = Matrix::CreateTranslation(m_x[i], 0, m_z[i]);
 	}
 
-	// キーボードの初期化
-	_keyboard = std::make_unique<Keyboard>();
+	//// 自機パーツの読み込み
+	//m_objPlayer1.resize(PLAYER_PARTS_NUM);
+	//m_objPlayer1[PLAYER_PARTS_LEG].LoadModel(L"Resources\\leg.cmo");
+	//m_objPlayer1[PLAYER_PARTS_BODY].LoadModel(L"Resources\\body.cmo");
+	//m_objPlayer1[PLAYER_PARTS_BATTERY].LoadModel(L"Resources\\battery.cmo");
+	//m_objPlayer1[PLAYER_PARTS_BATTERY2].LoadModel(L"Resources\\battery.cmo");
+	//m_objPlayer1[PLAYER_PARTS_HAND].LoadModel(L"Resources\\hand.cmo");
+	//m_objPlayer1[PLAYER_PARTS_HAND2].LoadModel(L"Resources\\hand.cmo");
+	//m_objPlayer1[PLAYER_PARTS_HEAD].LoadModel(L"Resources\\head.cmo");
 
-	// カメラの生成
-	m_camera = std::make_unique<FollowCamera>(m_outputWidth,m_outputHeight);
 
-	// カメラにキーボード設置
-	m_camera->SetKeyboard(_keyboard.get());
+	//// パーツの親子関係をセット
+	//m_objPlayer1[PLAYER_PARTS_HEAD].SetParent(
+	//	&m_objPlayer1[PLAYER_PARTS_BODY]);
+
+	//m_objPlayer1[PLAYER_PARTS_HAND].SetParent(
+	//	&m_objPlayer1[PLAYER_PARTS_BODY]);
+
+	//m_objPlayer1[PLAYER_PARTS_HAND2].SetParent(
+	//	&m_objPlayer1[PLAYER_PARTS_BODY]);
+
+	//m_objPlayer1[PLAYER_PARTS_LEG].SetParent(
+	//	&m_objPlayer1[PLAYER_PARTS_BODY]);
+
+	//m_objPlayer1[PLAYER_PARTS_BATTERY].SetParent(
+	//	&m_objPlayer1[PLAYER_PARTS_BODY]);
+
+	//m_objPlayer1[PLAYER_PARTS_BATTERY2].SetParent(
+	//	&m_objPlayer1[PLAYER_PARTS_BODY]);
+
+
+	//// 親からのオフセット
+	//// ボディの座標をいい感じの位置に
+	//m_objPlayer1[PLAYER_PARTS_BODY].SetTransform(Vector3(0,0.25,0));
+
+	//// 足をいい感じに
+	//m_objPlayer1[PLAYER_PARTS_LEG].SetScale(Vector3(0.8, 0.25, 0.5));
+
+	//m_objPlayer1[PLAYER_PARTS_LEG].SetTransform(Vector3(0, -0.25, 0));
+
+	//// 両手をいい感じに
+	//m_objPlayer1[PLAYER_PARTS_HAND].SetTransform(Vector3(-0.5, 0.6, -0.2));
+	//m_objPlayer1[PLAYER_PARTS_HAND].SetScale(Vector3(0.25, 0.25, 0.75));
+
+	//m_objPlayer1[PLAYER_PARTS_HAND2].SetTransform(Vector3(0.5, 0.6, -0.2));
+	//m_objPlayer1[PLAYER_PARTS_HAND2].SetScale(Vector3(0.25, 0.25, 0.75));
+
+	//// 頭をいい感じに
+	//m_objPlayer1[PLAYER_PARTS_HEAD].SetTransform(Vector3(0, 1, 0));
+	//m_objPlayer1[PLAYER_PARTS_HEAD].SetScale(Vector3(1.5, 1.5, 1.5));
+
+	//// タンクをいい感じに
+	//m_objPlayer1[PLAYER_PARTS_BATTERY].SetRotation(Vector3(0, 135, -0.55));
+	//m_objPlayer1[PLAYER_PARTS_BATTERY].SetTransform(Vector3(-0.5,0.9,-0.15));
+	//m_objPlayer1[PLAYER_PARTS_BATTERY].SetScale(Vector3(0.5, 0.5, 0.5));
+
+
+	//m_objPlayer1[PLAYER_PARTS_BATTERY2].SetRotation(Vector3(0, 135, 0.55));
+	//m_objPlayer1[PLAYER_PARTS_BATTERY2].SetTransform(Vector3(0.5, 0.9, -0.15));
+	//m_objPlayer1[PLAYER_PARTS_BATTERY2].SetScale(Vector3(0.5, 0.5, 0.5));
+
 }
 
 // Executes the basic game loop.
@@ -129,17 +203,33 @@ void Game::Tick()
 // Updates the world.
 void Game::Update(DX::StepTimer const& timer)
 {
-	g_key = _keyboard->GetState();
+	//g_key = _keyboard->GetState();
+
+	//// ここ危ない
+	//Keyboard::State keyboardState = _keyboard->GetState();
+
+	//m_PlayerKey.Update(keyboardState);
+
+	// DXTKを管理するインスタンスを取得
+	DXTK::DXTKResources& dxtk = DXTK::DXTKResources::singleton();
+
+	dxtk.UpdateInputState();
+
+	// キ-ボードの状態
+	Keyboard::State keyboardState = dxtk.m_keyboard->GetState();
+
 
     float elapsedTime = float(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
-    elapsedTime;
+    //elapsedTime;
+
+	_player->Update();
 
 	{// 自機に追従するカメラ
-		m_camera->SetTargetPos(tankPos);
+		m_camera->SetTargetPos(_player->GetPosition());
 
-		m_camera->SetTargetAngle(tankRot);
+		m_camera->SetTargetAngle(_player->GetAngle().y);
 
 		m_camera->SetFovY(XMConvertToRadians(60.0f));
 
@@ -153,6 +243,8 @@ void Game::Update(DX::StepTimer const& timer)
 
 		m_camera->Update();
 	}
+
+	m_objSkydome.Update();
 
 	// ビュー行列を取得
 	m_view = m_camera->GetViewMatrix();
@@ -193,8 +285,6 @@ void Game::Update(DX::StepTimer const& timer)
 
 		m_worldTeapot[i] = translation;
 
-
-
 		buf[i] = Matrix::CreateTranslation(m_x[i]*worldTimer,0,m_z[i]*worldTimer);
 	}
 
@@ -203,56 +293,105 @@ void Game::Update(DX::StepTimer const& timer)
 		worldTimer -= 0.1 / 60;
 	}
 
-	// キー操作
-	if (g_key.W)
+	//// キー操作
+	//if (g_key.W)
+	//{
+	//	// 移動量
+	//	Vector3 moveV = Vector3(0.0f, 0.0f, -0.1f);
+
+	//	float angle = m_objPlayer1[PLAYER_PARTS_BODY].GetRotation().y;
+
+	//	Matrix rotmat = Matrix::CreateRotationY(angle);
+
+	//	moveV = Vector3::TransformNormal(moveV,rotmat);
+
+	//	// 自機移動
+	//	Vector3 pos = m_objPlayer1[PLAYER_PARTS_BODY].GetTranslation();
+	//	m_objPlayer1[PLAYER_PARTS_BODY].SetTransform(pos + moveV);
+	//}
+
+	//if (g_key.S)
+	//{
+	//	// 移動量
+	//	Vector3 moveV = Vector3(0.0f, 0.0f, 0.1f);
+
+	//	float angle = m_objPlayer1[PLAYER_PARTS_BODY].GetRotation().y;
+
+	//	Matrix rotmat = Matrix::CreateRotationY(angle);
+
+	//	moveV = Vector3::TransformNormal(moveV, rotmat);
+
+	//	// 自機移動
+	//	Vector3 pos = m_objPlayer1[PLAYER_PARTS_BODY].GetTranslation();
+	//	m_objPlayer1[PLAYER_PARTS_BODY].SetTransform(pos + moveV);
+	//}
+
+	//if (g_key.A)
+	//{
+	//	// 回転量
+	//	//float rot = 0.03f;
+	//	float angle = m_objPlayer1[PLAYER_PARTS_BODY].GetRotation().y;
+	//	m_objPlayer1[PLAYER_PARTS_BODY].SetRotation(Vector3(0, angle + 0.03f, 0));
+
+	//	//m_objPlayer1[PLAYER_PARTS_BODY]
+	//}
+
+	//if (g_key.D)
+	//{
+	//	// 回転量
+	//	//float rot = -0.03f;
+	//	float angle = m_objPlayer1[PLAYER_PARTS_BODY].GetRotation().y;
+	//	m_objPlayer1[PLAYER_PARTS_BODY].SetRotation(Vector3(0, angle - 0.03f, 0));
+
+	//}
+
+	//for (std::vector<Obj3d>::iterator it = m_objPlayer1.begin(); 
+	//	it != m_objPlayer1.end();
+	//	it++)
+	//{
+	//	it->Update();
+	//}
+
+	/// <summary>
+	/// 近距離攻撃 後で関数化
+	/// </summary>
+	if (keyboardState.E)
 	{
-		// 移動量
-		Vector3 moveV = Vector3(0.0f, 0.0f, -0.1f);
+		_shortRangeAttackRot += 0.5;
 
-		// 移動量ベクトルを自機の角度分回転する
-		moveV = Vector3::TransformNormal(moveV, m_worldHead);
+		//m_objPlayer1[PLAYER_PARTS_HAND].SetRotation(Vector3(0, 0, _shortRangeAttackRot));
+		//m_objPlayer1[PLAYER_PARTS_HAND2].SetRotation(Vector3(0, 0, -_shortRangeAttackRot));
 
-		tankPos += moveV;
-	}
-
-	if (g_key.S)
-	{
-		// 移動量
-		Vector3 moveV = Vector3(0.0f, 0.0f, 0.1f);
-
-		// 移動量ベクトルを自機の角度分回転する
-		moveV = Vector3::TransformNormal(moveV, m_worldHead);
-
-		tankPos += moveV;
+		//m_objPlayer1[PLAYER_PARTS_HAND].SetScale(Vector3(0.25, 0.25, 1.25));
+		//m_objPlayer1[PLAYER_PARTS_HAND2].SetScale(Vector3(0.25, 0.25, 1.25));
+		
+		// ここ危ない
+		//if (m_PlayerKey.IsKeyReleased(Keyboard::Keys::E))
+		//{
+		//	m_objPlayer1[PLAYER_PARTS_HAND].SetScale(Vector3(0.25, 0.25, 0.75));
+		//	m_objPlayer1[PLAYER_PARTS_HAND2].SetScale(Vector3(0.25, 0.25, 0.75));
+		//}
 
 	}
 
-	if (g_key.A)
-	{
-		// 回転量
-		float rot = 0.03f;
+	//{// 自機のワールド行列を計算
 
-		tankRot += rot;
-	}
+	//	// パーツ1(親)
+	//	Matrix rot = Matrix::CreateRotationY(tankRot);
 
-	if (g_key.D)
-	{
-		// 回転量
-		float rot = -0.03f;
+	//	Matrix trans = Matrix::CreateTranslation(tankPos);
 
-		tankRot += rot;
-	}
+	//	// ワールド行列を合成
+	//	m_worldHead = rot * trans;
 
+	//	// パーツ2(子)
+	//	Matrix rot2 = Matrix::CreateRotationZ(XMConvertToRadians(90))*Matrix::CreateRotationY(0);
 
-	{// 自機のワールド行列を計算
+	//	Matrix trans2 = Matrix::CreateTranslation(Vector3(0,0.5f,0));
 
-		Matrix rot = Matrix::CreateRotationY(tankRot);
+	//	m_worldHead2 = rot2 * trans2 * m_worldHead;
 
-		Matrix trans = Matrix::CreateTranslation(tankPos);
-
-		m_worldHead = rot * trans;
-
-	}
+	//}
 }
 
 // Draws the scene.
@@ -292,7 +431,7 @@ void Game::Render()
 	// 地面モデルの描画
 	m_modelGround->Draw(m_d3dContext.Get(), m_states, m_world, m_view, m_proj);
 
-	m_modelSkydome->Draw(m_d3dContext.Get(), m_states, m_world, m_view, m_proj);
+	m_objSkydome.Draw();
 
 
 	//for (int i = 0; i < 10; i++)
@@ -304,13 +443,19 @@ void Game::Render()
 	//}
 			
 	m_modelGround->Draw(m_d3dContext.Get(), m_states, m_worldGround, m_view, m_proj);
-	// ティーポットのモデルの描画
-	for (int i = 0; i < 20; i++)
-	{
-		m_teapot->Draw(m_d3dContext.Get(), m_states, m_worldTeapot[i], m_view, m_proj);
-	}
+	//// ティーポットのモデルの描画
+	//for (int i = 0; i < 20; i++)
+	//{
+	//	m_teapot->Draw(m_d3dContext.Get(), m_states, m_worldTeapot[i], m_view, m_proj);
+	//}
 
-	m_modelHead->Draw(m_d3dContext.Get(), m_states, m_worldHead, m_view, m_proj);
+	//// 頭部モデル
+	//m_modelHead->Draw(m_d3dContext.Get(), m_states, m_worldHead, m_view, m_proj);
+	//// 頭部モデル2
+	//m_modelHead->Draw(m_d3dContext.Get(), m_states, m_worldHead2, m_view, m_proj);
+
+	// プレイヤーの描画
+	_player->Draw();
 
 	// タンクの平行移動
 

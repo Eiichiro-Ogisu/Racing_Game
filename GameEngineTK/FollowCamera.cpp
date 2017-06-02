@@ -13,8 +13,6 @@ FollowCamera::FollowCamera(int width, int height)
 	_targetPos = Vector3::Zero;
 
 	_targetAngle = 0.0;
-
-	_keyboard = nullptr;
 	
 	isFPS = false;
 
@@ -23,15 +21,20 @@ FollowCamera::FollowCamera(int width, int height)
 
 void FollowCamera::Update()
 {
+	// DXTKを管理するインスタンスを取得
+	DXTK::DXTKResources& dxtk = DXTK::DXTKResources::singleton();
+
+	dxtk.UpdateInputState();
+
 	Vector3 eyePos, refPos;
 
 	// キ-ボードの状態
-	Keyboard::State keyboardState = _keyboard->GetState();
+	Keyboard::State keyboardState = dxtk.m_keyboard->GetState();
 
-	m_keyboardTracker.Update(keyboardState);
+	dxtk.m_keyTracker->Update(keyboardState);
 
 	// Cキーを押すごとに切り替え
-	if (m_keyboardTracker.IsKeyPressed(Keyboard::Keys::C))
+	if (dxtk.m_keyTracker->IsKeyPressed(Keyboard::Keys::C))
 	{
 		// フラグを切り替え
 		isFPS = !isFPS;
@@ -136,7 +139,7 @@ void FollowCamera::InitializeTPS()
 	SetRefPos(refPos);
 }
 
-void FollowCamera::SetTargetPos(DirectX::SimpleMath::Vector3  & targetPos)
+void FollowCamera::SetTargetPos(const DirectX::SimpleMath::Vector3  & targetPos)
 {
 	_targetPos = targetPos;
 }
@@ -145,7 +148,7 @@ void FollowCamera::SetTargetAngle(float targetAngles)
 {
 	_targetAngle = targetAngles;
 }
-void FollowCamera::SetKeyboard(Keyboard* keyboard)
-{
-	_keyboard = keyboard;
-}
+//void FollowCamera::SetKeyboard(Keyboard* keyboard)
+//{
+//	_keyboard = keyboard;
+//}
