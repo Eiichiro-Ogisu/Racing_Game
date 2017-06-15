@@ -5,6 +5,7 @@
 #include "pch.h"
 #include "Game.h"
 #include <Keyboard.h>
+#include "Collision.h"
 
 using namespace DirectX;
 
@@ -33,6 +34,29 @@ extern "C"
 // Entry point
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
+	//Sphere sphereA;
+
+	//sphereA._center = DirectX::SimpleMath::Vector3(1.0f, 0, 0);
+
+	//sphereA._radius = 2.0f;
+
+	//Sphere sphereB;
+
+	//sphereB._center = DirectX::SimpleMath::Vector3(-1.0f, 0, 0);
+
+	//sphereB._radius = 2.0f;
+
+	//bool hit = CheckSphere2Sphere(sphereA, sphereB);
+
+	//if (hit)
+	//{
+	//	OutputDebugString(L"“–‚½‚Á‚½\n");
+	//}
+	//else
+	//{
+	//	OutputDebugString(L"“–‚½‚Á‚Ä‚È‚¢\n");
+	//}
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
