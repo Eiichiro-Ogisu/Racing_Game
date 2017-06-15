@@ -1,3 +1,6 @@
+/// <summary>
+/// Enemy
+/// </summary>
 #pragma once
 
 #include <d3d11_1.h>
@@ -8,7 +11,7 @@
 #include "DXTKResouces.h"
 #include "obj3d.h"
 
-class Player
+class Enemy
 {
 public:
 
@@ -29,12 +32,12 @@ public:
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	Player();
+	Enemy();
 
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
-	~Player();
+	~Enemy();
 
 	/// <summary>
 	/// 初期化
@@ -50,16 +53,6 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw();
-
-	/// <summary>
-	/// 弾丸を発射
-	/// </summary>
-	void FireBullet();
-
-	/// <summary>
-	/// 弾丸を再装着
-	/// </summary>
-	void ResetBullet();
 
 	/// <summary>
 	/// 座標を取得
@@ -79,21 +72,22 @@ public:
 	/// <summary>
 	/// 角度の取得
 	/// </summary>
-	const DirectX::SimpleMath::Vector3& GetRot();
+	const DirectX::SimpleMath::Vector3& GetAngle();
+
+	/// 回転を設定
+	void SetRot(const DirectX::SimpleMath::Vector3& rot);
 
 protected:
+	// サイン用の引数の角度
+	float _sinAngle;
+
 	// パーツ
 	std::vector<Obj3d> _obj;
 
-	// 自機の座標
-	DirectX::SimpleMath::Vector3 _position;
+	// タイマー
+	int _timer;
 
-	DirectX::SimpleMath::Vector3 _angle;
+	// 目的地の角度
+	float _distAngle;
 
-	// 弾丸の速度ベクトル
-	DirectX::SimpleMath::Vector3 _bulletVel;
-
-	int cnt = 0;
-
-	bool isFire = false;
 };

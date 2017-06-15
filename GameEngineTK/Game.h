@@ -11,6 +11,7 @@
 #include "FollowCamera.h"
 #include "Obj3d.h"
 #include "Player.h"
+#include "Enemy.h"
 
 #include <PrimitiveBatch.h>		// PrimitiveBatch
 #include <VertexTypes.h>		// VertexPositionColor
@@ -183,4 +184,7 @@ private:
 
 	// ƒJƒƒ‰
 	std::unique_ptr<FollowCamera> m_camera;
+
+	// “G
+	std::vector<std::unique_ptr<Enemy>> _enemies;
 };

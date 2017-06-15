@@ -17,6 +17,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="DXTKResouces.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Enemy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -28,6 +29,7 @@
     <ClCompile Include="Obj3d.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="DXTKResouces.cpp" />
+    <ClCompile Include="Enemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

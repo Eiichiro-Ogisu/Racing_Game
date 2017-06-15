@@ -63,6 +63,17 @@ void Game::Initialize(HWND window, int width, int height)
 	// プレイヤーの生成 
 	_player = new Player();
 
+	// 敵の生成
+	int enemyNum = rand() % 10 + 1;
+
+	_enemies.resize(enemyNum);
+
+	for (int i = 0; i < enemyNum; i++)
+	{
+		_enemies[i] = std::make_unique<Enemy>();
+
+		_enemies[i]->Initialize();
+	}
 
 	// カメラにキーボード設置
 	//m_camera->SetKeyboard(_keyboard.get());
@@ -226,10 +237,17 @@ void Game::Update(DX::StepTimer const& timer)
 
 	_player->Update();
 
+	for (std::vector<std::unique_ptr<Enemy>>::iterator it = _enemies.begin();
+		it != _enemies.end();
+		it++)
+	{
+		(*it)->Update();
+	}
+
 	{// 自機に追従するカメラ
 		m_camera->SetTargetPos(_player->GetPosition());
 
-		m_camera->SetTargetAngle(_player->GetAngle().y);
+		m_camera->SetTargetAngle(_player->GetRot().y);
 
 		m_camera->SetFovY(XMConvertToRadians(60.0f));
 
@@ -456,6 +474,13 @@ void Game::Render()
 
 	// プレイヤーの描画
 	_player->Draw();
+
+	for (std::vector<std::unique_ptr<Enemy>>::iterator it = _enemies.begin();
+		it != _enemies.end();
+		it++)
+	{
+		(*it)->Draw();
+	}
 
 	// タンクの平行移動
 

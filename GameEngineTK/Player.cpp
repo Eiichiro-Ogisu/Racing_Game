@@ -111,7 +111,7 @@ void Player::Update()
 
 		// 自機移動
 		Vector3 pos = _obj[PLAYER_PARTS_BODY].GetTranslation();
-		_obj[PLAYER_PARTS_BODY].SetTransform(pos + moveV);
+		_obj[PLAYER_PARTS_BODY].SetTransform(pos += moveV);
 	}
 
 	if (keyboardState.S)
@@ -127,7 +127,7 @@ void Player::Update()
 
 		// 自機移動
 		Vector3 pos = _obj[PLAYER_PARTS_BODY].GetTranslation();
-		_obj[PLAYER_PARTS_BODY].SetTransform(pos + moveV);
+		_obj[PLAYER_PARTS_BODY].SetTransform(pos += moveV);
 	}
 
 	if (keyboardState.A)
@@ -143,14 +143,48 @@ void Player::Update()
 		//float rot = -0.03f;
 		float angle = _obj[PLAYER_PARTS_BODY].GetRotation().y;
 		_obj[PLAYER_PARTS_BODY].SetRotation(Vector3(0, angle - 0.03f, 0));
-
 	}
+
+
+
 	for (std::vector<Obj3d>::iterator it = _obj.begin();
 		it != _obj.end();
 		it++)
 	{
 		it->Update();
 	}
+
+	if (keyboardState.Space)
+	{
+		FireBullet();
+
+		isFire = true;
+	}
+
+	if (isFire)
+	{
+		cnt++;
+		// 弾丸を発射する
+		{
+			//自機移動
+			Vector3 pos = _obj[PLAYER_PARTS_HAND].GetTranslation();
+			_obj[PLAYER_PARTS_HAND].SetTransform(pos += _bulletVel);
+
+			Vector3 pos2 = _obj[PLAYER_PARTS_HAND2].GetTranslation();
+			_obj[PLAYER_PARTS_HAND2].SetTransform(pos2 += _bulletVel);
+
+		}
+
+		if (cnt > 120)
+		{
+			ResetBullet();
+
+			isFire = false;
+
+			cnt = 0;
+		}
+	}
+
 }
 
 void Player::Draw()
@@ -161,6 +195,56 @@ void Player::Draw()
 	{
 		it->Draw();
 	}
+}
+
+void Player::FireBullet()
+{
+	// 発射するパーツのワールド行列を取得
+	Matrix worldm = _obj[PLAYER_PARTS_HAND].GetWorld();
+
+	Matrix worldm2 = _obj[PLAYER_PARTS_HAND2].GetWorld();
+
+
+	// ワールド行列から各要素を抽出
+	Vector3 scale;			// ワールドスケーリング
+	Quaternion rotation;	// ワールド回転
+	Vector3 translation;	// ワールド座標
+
+	worldm.Decompose(scale,rotation, translation);
+
+	// 発射やパーツを親から分離して独立
+	_obj[PLAYER_PARTS_HAND].SetParent(nullptr);
+	_obj[PLAYER_PARTS_HAND].SetScale(scale);
+	_obj[PLAYER_PARTS_HAND].SetRotationQ(rotation);
+	_obj[PLAYER_PARTS_HAND].SetTransform(translation);
+
+	worldm2.Decompose(scale, rotation, translation);
+
+	_obj[PLAYER_PARTS_HAND2].SetParent(nullptr);
+	_obj[PLAYER_PARTS_HAND2].SetScale(scale);
+	_obj[PLAYER_PARTS_HAND2].SetRotationQ(rotation);
+	_obj[PLAYER_PARTS_HAND2].SetTransform(translation);
+
+
+	// 弾丸の速度を設定
+	_bulletVel = Vector3(0, 0, -0.1f);
+	_bulletVel = Vector3::Transform(_bulletVel, rotation);
+}
+
+void Player::ResetBullet()
+{
+		_obj[PLAYER_PARTS_HAND].SetParent(&_obj[PLAYER_PARTS_BODY]);
+		_obj[PLAYER_PARTS_HAND2].SetParent(&_obj[PLAYER_PARTS_BODY]);
+
+		_obj[PLAYER_PARTS_HAND].SetTransform(Vector3(-0.5, 0.6, -0.2));
+		_obj[PLAYER_PARTS_HAND].SetRotation(Vector3(0, 0, 0));
+		_obj[PLAYER_PARTS_HAND].SetScale(Vector3(0.25, 0.25, 0.75));
+
+
+		_obj[PLAYER_PARTS_HAND2].SetTransform(Vector3(0.5, 0.6, -0.2));
+		_obj[PLAYER_PARTS_HAND2].SetRotation(Vector3(0,0,0));
+		_obj[PLAYER_PARTS_HAND2].SetScale(Vector3(0.25, 0.25, 0.75));
+
 }
 
 const DirectX::SimpleMath::Vector3 & Player::GetPosition()
@@ -181,7 +265,7 @@ const DirectX::SimpleMath::Matrix & Player::GetLocalWorld()
 
 }
 
-const DirectX::SimpleMath::Vector3 & Player::GetAngle()
+const DirectX::SimpleMath::Vector3 & Player::GetRot()
 {
 	// TODO: return ステートメントをここに挿入します
 	return _obj[PLAYER_PARTS_BODY].GetRotation();
