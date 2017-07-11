@@ -10,8 +10,8 @@
 #include "Camera.h"
 #include "FollowCamera.h"
 #include "Obj3d.h"
-#include "Player.h"
-#include "Enemy.h"
+#include "Car.h"
+#include "LandShape.h"
 
 #include <PrimitiveBatch.h>		// PrimitiveBatch
 #include <VertexTypes.h>		// VertexPositionColor
@@ -29,19 +29,19 @@ class Game
 {
 public:
 
-	// 自機パーツ
-	enum PLAYER_PARTS
-	{
-		PLAYER_PARTS_LEG,
-		PLAYER_PARTS_BODY,
-		PLAYER_PARTS_BATTERY,
-		PLAYER_PARTS_BATTERY2,
-		PLAYER_PARTS_HAND,
-		PLAYER_PARTS_HAND2,
-		PLAYER_PARTS_HEAD,
+	//// 自機パーツ
+	//enum PLAYER_PARTS
+	//{
+	//	PLAYER_PARTS_LEG,
+	//	PLAYER_PARTS_BODY,
+	//	PLAYER_PARTS_BATTERY,
+	//	PLAYER_PARTS_BATTERY2,
+	//	PLAYER_PARTS_HAND,
+	//	PLAYER_PARTS_HAND2,
+	//	PLAYER_PARTS_HEAD,
 
-		PLAYER_PARTS_NUM
-	};
+	//	PLAYER_PARTS_NUM
+	//};
 
     Game();
 
@@ -129,24 +129,12 @@ private:
 
 	DirectX::SimpleMath::Matrix m_worldBall2[10];
 
-	DirectX::SimpleMath::Matrix m_worldGround;
+	//DirectX::SimpleMath::Matrix m_worldGround;
 
 	// ティーポットワールド行列
 	DirectX::SimpleMath::Matrix m_worldTeapot[20];
 
 	DirectX::SimpleMath::Matrix buf[20];
-
-	//// 自機のワールド行列
-	//DirectX::SimpleMath::Matrix m_worldHead = DirectX::SimpleMath::Matrix::Identity;
-
-	//// 自機のワールド行列2
-	//DirectX::SimpleMath::Matrix m_worldHead2 = DirectX::SimpleMath::Matrix::Identity;
-
-	// 自機の3dオブジェクト
-	//std::vector<Obj3d> m_objPlayer1;
-	Obj3d _player2;
-
-	//std::vector<Obj3d> m_objPlayer;
 
 	int m_angle = 0;
 
@@ -168,14 +156,7 @@ private:
 
 	DirectX::SimpleMath::Matrix transBuf[20];
 
-	//std::unique_ptr<DirectX::Keyboard> _keyboard;
-
-	// ここ危ない
-	//DirectX::Keyboard::KeyboardStateTracker m_PlayerKey;
-
-	Player* _player;
-
-	//DirectX::Keyboard::State g_key;
+	std::unique_ptr<Car> _car;
 
 	// 自機の座標
 	DirectX::SimpleMath::Vector3 tankPos;
@@ -185,6 +166,9 @@ private:
 	// カメラ
 	std::unique_ptr<FollowCamera> m_camera;
 
-	// 敵
-	std::vector<std::unique_ptr<Enemy>> _enemies;
+	//// 敵
+	//std::vector<std::unique_ptr<Enemy>> _enemies;
+
+	// 地形
+	LandShape m_landShape;
 };

@@ -14,11 +14,14 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FollowCamera.h" />
     <ClInclude Include="Obj3d.h" />
-    <ClInclude Include="Player.h" />
     <ClInclude Include="DXTKResouces.h" />
     <ClInclude Include="Singleton.h" />
-    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Collision.h" />
+    <ClInclude Include="CollisionNode.h" />
+    <ClInclude Include="ModelEffect.h" />
+    <ClInclude Include="LandShape.h" />
+    <ClInclude Include="LandShapeData.h" />
+    <ClInclude Include="Car.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -28,10 +31,13 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FollowCamera.cpp" />
     <ClCompile Include="Obj3d.cpp" />
-    <ClCompile Include="Player.cpp" />
     <ClCompile Include="DXTKResouces.cpp" />
-    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="CollisionNode.cpp" />
+    <ClCompile Include="ModelEffect.cpp" />
+    <ClCompile Include="LandShape.cpp" />
+    <ClCompile Include="LandShapeData.cpp" />
+    <ClCompile Include="Car.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -59,22 +65,16 @@
     <MeshContentTask Include="Assets\Ground200m.FBX">
       <Filter>Assets</Filter>
     </MeshContentTask>
-    <MeshContentTask Include="Assets\Teapot.FBX">
+    <MeshContentTask Include="Assets\SphereNode.FBX">
       <Filter>Assets</Filter>
     </MeshContentTask>
-    <MeshContentTask Include="Assets\head.FBX">
+    <MeshContentTask Include="Assets\hit_effect.FBX">
       <Filter>Assets</Filter>
     </MeshContentTask>
-    <MeshContentTask Include="Assets\Battery.FBX">
+    <MeshContentTask Include="Assets\tire.FBX">
       <Filter>Assets</Filter>
     </MeshContentTask>
     <MeshContentTask Include="Assets\body.FBX">
-      <Filter>Assets</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="Assets\leg.FBX">
-      <Filter>Assets</Filter>
-    </MeshContentTask>
-    <MeshContentTask Include="Assets\hand.FBX">
       <Filter>Assets</Filter>
     </MeshContentTask>
   </ItemGroup>

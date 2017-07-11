@@ -9,13 +9,11 @@
 
 using namespace DirectX;
 
-#include "Enemy.h"
-
-// “G‚ÌÅ‘å”
-static const int ENEMY_NUM = 5;
-
-// “G
-Enemy* objEnemies[ENEMY_NUM];
+//// “G‚ÌÅ‘å”
+//static const int ENEMY_NUM = 5;
+//
+//// “G
+//Enemy* objEnemies[ENEMY_NUM];
 
 namespace
 {
