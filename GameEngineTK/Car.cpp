@@ -53,7 +53,9 @@ void Car::Initialize()
 		//_collisionNodeBullet.SetLocalRadius(0.5f);
 		//}
 
-	_carVelocity = Vector3::Zero;
+	_carSpeed = 0.0f;
+
+	_isMove = false;
 }
 
 /// <summary>
@@ -129,29 +131,45 @@ void Car::Update()
 		// Aキー
 		if (gamepadState.IsAPressed())
 		{
-			// 移動量
-			Vector3 moveV = Vector3(0.0f, 0.0f, -0.1f);
+			// 加速
+			Acceleration();
+
+			Vector3 moveVec = Vector3(0.0f, 0.0f, -1.0f);
 
 			float angle = _obj[CAR_BODY].GetRotation().y;
 
 			Matrix rotmat = Matrix::CreateRotationY(angle);
 
-			moveV = Vector3::TransformNormal(moveV, rotmat);
-
+			moveVec = Vector3::TransformNormal(moveVec, rotmat);
+			
+			Vector3 carVelocity = moveVec * _carSpeed;
 			// 自機移動
 			Vector3 pos = _obj[CAR_BODY].GetTranslation();
-			_obj[CAR_BODY].SetTransform(pos += moveV);
+
+			_obj[CAR_BODY].SetTransform(pos += carVelocity);
+
+			_isMove = true;
 		}
 
-		// 左スティックの右入力
-		float dirX = gamepadState.thumbSticks.leftX;
+		if (_isMove)
+		{
+			// 左スティックの左右入力
+			float dirX = gamepadState.thumbSticks.leftX;
 
-		// 回転量
-		float angle = _obj[CAR_BODY].GetRotation().y;
-		_obj[CAR_BODY].SetRotation(Vector3(0, angle - dirX *0.025f, 0));
-
+			// 回転量
+			float angle = _obj[CAR_BODY].GetRotation().y;
+			_obj[CAR_BODY].SetRotation(Vector3(0, angle - dirX *0.025f, 0));
+		}
 	}
 	
+	/// <summary>
+	/// 減速
+	/// </summary>
+	//if (!_isMove)
+	//{
+	//	Deceleration();
+	//}
+
 	// 当たり判定の更新
 	_collisionNodeBullet.Update();
 
@@ -181,52 +199,10 @@ void Car::Draw()
 
 void Car::FireBullet()
 {
-	//// 発射するパーツのワールド行列を取得
-	//Matrix worldm = _obj[PLAYER_PARTS_HAND].GetWorld();
-
-	//Matrix worldm2 = _obj[PLAYER_PARTS_HAND2].GetWorld();
-
-
-	// ワールド行列から各要素を抽出
-	Vector3 scale;			// ワールドスケーリング
-	Quaternion rotation;	// ワールド回転
-	Vector3 translation;	// ワールド座標
-
-	//worldm.Decompose(scale,rotation, translation);
-
-	//// 発射やパーツを親から分離して独立
-	//_obj[PLAYER_PARTS_HAND].SetParent(nullptr);
-	//_obj[PLAYER_PARTS_HAND].SetScale(scale);
-	//_obj[PLAYER_PARTS_HAND].SetRotationQ(rotation);
-	//_obj[PLAYER_PARTS_HAND].SetTransform(translation);
-
-	//worldm2.Decompose(scale, rotation, translation);
-
-	//_obj[PLAYER_PARTS_HAND2].SetParent(nullptr);
-	//_obj[PLAYER_PARTS_HAND2].SetScale(scale);
-	//_obj[PLAYER_PARTS_HAND2].SetRotationQ(rotation);
-	//_obj[PLAYER_PARTS_HAND2].SetTransform(translation);
-
-
-	//// 弾丸の速度を設定
-	//_bulletVel = Vector3(0, 0, -0.5f);
-	//_bulletVel = Vector3::Transform(_bulletVel, rotation);
 }
 
 void Car::ResetBullet()
 {
-		//_obj[PLAYER_PARTS_HAND].SetParent(&_obj[PLAYER_PARTS_BODY]);
-		//_obj[PLAYER_PARTS_HAND2].SetParent(&_obj[PLAYER_PARTS_BODY]);
-
-		//_obj[PLAYER_PARTS_HAND].SetTransform(Vector3(-0.5, 0.6, -0.2));
-		//_obj[PLAYER_PARTS_HAND].SetRotation(Vector3(0, 0, 0));
-		//_obj[PLAYER_PARTS_HAND].SetScale(Vector3(0.25, 0.25, 0.75));
-
-
-		//_obj[PLAYER_PARTS_HAND2].SetTransform(Vector3(0.5, 0.6, -0.2));
-		//_obj[PLAYER_PARTS_HAND2].SetRotation(Vector3(0,0,0));
-		//_obj[PLAYER_PARTS_HAND2].SetScale(Vector3(0.25, 0.25, 0.75));
-
 }
 
 const DirectX::SimpleMath::Vector3 & Car::GetPosition()
@@ -267,3 +243,29 @@ const DirectX::SimpleMath::Vector3 & Car::GetRot()
 	return _obj[CAR_BODY].GetRotation();
 }
 
+/// <summary>
+/// 移動開始
+/// </summary>
+void Car::Acceleration()
+{
+	_carSpeed += MOVE_SPEED_FIRST;
+
+	// 移動フラグオンに
+	_isMove = true;
+}
+
+/// <summary>
+/// 移動終了
+/// </summary>
+void Car::Breaking()
+{
+	_carSpeed = 0.0f;
+}
+
+/// <summary>
+/// 減速処理
+/// </summary>
+void Car::Deceleration()
+{
+	_carSpeed *= DECELERATION_VALUE;
+}

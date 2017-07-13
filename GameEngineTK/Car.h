@@ -14,12 +14,12 @@ class Car
 public:
 
 	// 移動初速
-	const float MOVE_SPEED_FIRST = 0.5f;
+	const float MOVE_SPEED_FIRST = 0.01f;
 
 	// 移動初速<m/frame>
-	const float MOVE_SPEED_MAX = 0.3f;
+	const float MOVE_SPEED_MAX = 0.03f;
 	// 減速値
-	const float DECELERATION_VALUE = 0.03f;
+	const float DECELERATION_VALUE = 0.05f;
 
 	// 自機パーツ
 	enum CAR_PARTS
@@ -93,6 +93,12 @@ public:
 	/// </summary>
 	const DirectX::SimpleMath::Vector3& GetRot();
 
+	void Acceleration();
+
+	void Breaking();
+
+	void Deceleration();
+
 protected:
 	// パーツ
 	std::vector<Obj3d> _obj;
@@ -103,11 +109,13 @@ protected:
 	DirectX::SimpleMath::Vector3 _angle;
 
 	// プレイヤーの速度ベクトル
-	DirectX::SimpleMath::Vector3 _carVelocity;
+	float _carSpeed;
 
 	int cnt = 0;
 
 	bool isFire = false;
+
+	bool _isMove;
 
 	// 弾丸用の当たり判定
 	SphereNode _collisionNodeBullet;
