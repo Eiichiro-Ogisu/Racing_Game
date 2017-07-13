@@ -81,8 +81,8 @@ void Car::Update()
 	// キ-ボードの状態
 	Keyboard::State keyboardState = dxtk.m_keyboard->GetState();
 
-	// ゲームパッドの状態
-	GamePad::State gamepadState = dxtk.m_gamePad->GetState(0);
+	//// ゲームパッドの状態
+	//GamePad::State gamepadState = dxtk.m_gamePad->GetState(0);
 
 	// キー操作
 	if (keyboardState.W)
@@ -136,55 +136,44 @@ void Car::Update()
 	/// ゲームパッド操作
 	/// </summary>
 	
-	if (gamepadState.IsConnected())
+	if (state.IsConnected())
 	{
 		// Aボタンが押されたら
 		if (dxtk.m_buttons.a)
 		{
 			// 加速
 			Acceleration();
-
-			Vector3 moveVec = Vector3(0.0f, 0.0f, -1.0f);
-
-			float angle = _obj[CAR_BODY].GetRotation().y;
-
-			Matrix rotmat = Matrix::CreateRotationY(angle);
-
-			moveVec = Vector3::TransformNormal(moveVec, rotmat);
-			
-			Vector3 carVelocity = moveVec * _carSpeed;
-			// 自機移動
-			Vector3 pos = _obj[CAR_BODY].GetTranslation();
-
-			_obj[CAR_BODY].SetTransform(pos += carVelocity);
-
-			_isMove = true;
 		}
 
-		// Aボタンが離されたら
-		if (dxtk.m_buttons.a == GamePad::ButtonStateTracker::RELEASED)
-		{
-			_carSpeed = 0.0f;
-		}
-
-		if (_isMove)
-		{
-			// 左スティックの左右入力
-			float dirX = gamepadState.thumbSticks.leftX;
-
-			// 回転量
-			float angle = _obj[CAR_BODY].GetRotation().y;
-			_obj[CAR_BODY].SetRotation(Vector3(0, angle - dirX *0.025f, 0));
-		}
 	}
 	
 	/// <summary>
-	/// 減速
+	/// 移動中に行われる処理
 	/// </summary>
-	//if (!_isMove)
-	//{
-	//	Deceleration();
-	//}
+	// 移動しているなら
+	if (_isMove)
+	{
+		AddSpeed();
+
+		// 移動しているときのみ回転可能に
+		SteeringOperation();
+	}
+
+	// 移動しているなら減速をかける
+	if (_isMove && dxtk.m_buttons.a == !GamePad::ButtonStateTracker::PRESSED)
+	{
+		// 車の速度を徐々に落としていく
+		Deceleration();
+	}
+
+	/// <summary>
+	/// 車のスピードが一定以下になったら停止させる
+	/// </summary>
+	if (dxtk.m_buttons.a == !GamePad::ButtonStateTracker::PRESSED &&
+		_carSpeed < 0.02f && _isMove)
+	{
+		_isMove = false;
+	}
 
 	// 当たり判定の更新
 	_collisionNodeBullet.Update();
@@ -275,7 +264,8 @@ void Car::Acceleration()
 /// </summary>
 void Car::Breaking()
 {
-	_carSpeed = 0.0f;
+	// TODO: ブレーキの実装
+	//_carSpeed = 0.0f;
 }
 
 /// <summary>
@@ -284,4 +274,47 @@ void Car::Breaking()
 void Car::Deceleration()
 {
 	_carSpeed *= DECELERATION_VALUE;
+}
+
+/// <summary>
+/// 加速処理
+/// </summary>
+void Car::AddSpeed()
+{
+	// 進行方向ベクトルの設定
+	Vector3 moveVec = Vector3(0.0f, 0.0f, -1.0f);
+
+	// 回転取得
+	float angle = _obj[CAR_BODY].GetRotation().y;
+
+	// ワールド座標系に変換
+	Matrix rotmat = Matrix::CreateRotationY(angle);
+
+	moveVec = Vector3::TransformNormal(moveVec, rotmat);
+
+	Vector3 carVelocity = moveVec * _carSpeed;
+
+	// 自機移動
+	Vector3 pos = _obj[CAR_BODY].GetTranslation();
+
+	_obj[CAR_BODY].SetTransform(pos += carVelocity);
+}
+
+/// <summary>
+/// 車のハンドル制御
+/// </summary>
+void Car::SteeringOperation()
+{
+	// DXTKを管理するインスタンスを取得
+	DXTK::DXTKResources& dxtk = DXTK::DXTKResources::singleton();
+
+	// キーボードの状態(多分こっち使う)
+	auto state = dxtk.m_gamePad->GetState(0);
+
+	// 左側スティックの左右入力
+	float dirX = state.thumbSticks.leftX;
+
+	// 回転量
+	float angle = _obj[CAR_BODY].GetRotation().y;
+	_obj[CAR_BODY].SetRotation(Vector3(0, angle - dirX *0.01f, 0));
 }

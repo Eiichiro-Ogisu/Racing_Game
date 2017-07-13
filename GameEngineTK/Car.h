@@ -19,7 +19,7 @@ public:
 	// 移動初速<m/frame>
 	const float MOVE_SPEED_MAX = 0.03f;
 	// 減速値
-	const float DECELERATION_VALUE = 0.05f;
+	const float DECELERATION_VALUE = 0.995f;
 
 	// 自機パーツ
 	enum CAR_PARTS
@@ -98,6 +98,10 @@ public:
 	void Breaking();
 
 	void Deceleration();
+
+	void AddSpeed();
+
+	void SteeringOperation();
 
 protected:
 	// パーツ
