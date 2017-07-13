@@ -17,6 +17,7 @@ DXTK::DXTKResources::DXTKResources()
 	m_keyTracker = std::make_unique<Keyboard::KeyboardStateTracker>();
 	m_mouse = std::make_unique<Mouse>();
 	m_mouseTracker = std::make_unique<Mouse::ButtonStateTracker>();
+	m_gamePad = std::make_unique<GamePad>();
 }
 
 void DXTK::DXTKResources::Initializer(ID3D11Device* device, ID3D11DeviceContext* context)
@@ -32,6 +33,10 @@ void DXTK::DXTKResources::Initializer(ID3D11Device* device, ID3D11DeviceContext*
 
 	// スプライトフォント
 	m_spriteFont = std::make_unique<SpriteFont>(device, L"myfile.spritefont");
+
+	// ゲームパッド情報を取得
+	GamePad::State pad = m_gamePad->GetState(0);
+
 }
 
 void DXTK::DXTKResources::UpdateInputState()
@@ -43,4 +48,5 @@ void DXTK::DXTKResources::UpdateInputState()
 	// マウス情報を取得
 	Mouse::State mouse = m_mouse->GetState();
 	m_mouseTracker->Update(mouse);
+
 }

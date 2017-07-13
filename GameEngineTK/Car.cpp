@@ -52,6 +52,8 @@ void Car::Initialize()
 		//_collisionNodeBullet.SetTrans(Vector3(0, 0, 0));
 		//_collisionNodeBullet.SetLocalRadius(0.5f);
 		//}
+
+	_carVelocity = Vector3::Zero;
 }
 
 /// <summary>
@@ -66,6 +68,9 @@ void Car::Update()
 
 	// キ-ボードの状態
 	Keyboard::State keyboardState = dxtk.m_keyboard->GetState();
+
+	// ゲームパッドの状態
+	GamePad::State gamepadState = dxtk.m_gamePad->GetState(0);
 
 	// キー操作
 	if (keyboardState.W)
@@ -115,9 +120,38 @@ void Car::Update()
 		_obj[CAR_BODY].SetRotation(Vector3(0, angle - 0.03f, 0));
 	}
 
+	/// <summary>
+	/// ゲームパッド操作
+	/// </summary>
+	
+	if (gamepadState.IsConnected())
+	{
+		// Aキー
+		if (gamepadState.IsAPressed())
+		{
+			// 移動量
+			Vector3 moveV = Vector3(0.0f, 0.0f, -0.1f);
 
+			float angle = _obj[CAR_BODY].GetRotation().y;
 
+			Matrix rotmat = Matrix::CreateRotationY(angle);
 
+			moveV = Vector3::TransformNormal(moveV, rotmat);
+
+			// 自機移動
+			Vector3 pos = _obj[CAR_BODY].GetTranslation();
+			_obj[CAR_BODY].SetTransform(pos += moveV);
+		}
+
+		// 左スティックの右入力
+		float dirX = gamepadState.thumbSticks.leftX;
+
+		// 回転量
+		float angle = _obj[CAR_BODY].GetRotation().y;
+		_obj[CAR_BODY].SetRotation(Vector3(0, angle - dirX *0.025f, 0));
+
+	}
+	
 	// 当たり判定の更新
 	_collisionNodeBullet.Update();
 
@@ -129,29 +163,6 @@ void Car::Update()
 		isFire = true;
 	}
 
-	//if (isFire)
-	//{
-	//	cnt++;
-	//	// 弾丸を発射する
-	//	{
-	//		//自機移動
-	//		Vector3 pos = _obj[PLAYER_PARTS_HAND].GetTranslation();
-	//		_obj[PLAYER_PARTS_HAND].SetTransform(pos += _bulletVel);
-
-	//		Vector3 pos2 = _obj[PLAYER_PARTS_HAND2].GetTranslation();
-	//		_obj[PLAYER_PARTS_HAND2].SetTransform(pos2 += _bulletVel);
-
-	//	}
-
-	//	if (cnt > 120)
-	//	{
-	//		ResetBullet();
-
-	//		isFire = false;
-
-	//		cnt = 0;
-	//	}
-	//}
 	Calc();
 }
 

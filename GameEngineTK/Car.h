@@ -13,6 +13,14 @@ class Car
 {
 public:
 
+	// 移動初速
+	const float MOVE_SPEED_FIRST = 0.5f;
+
+	// 移動初速<m/frame>
+	const float MOVE_SPEED_MAX = 0.3f;
+	// 減速値
+	const float DECELERATION_VALUE = 0.03f;
+
 	// 自機パーツ
 	enum CAR_PARTS
 	{
@@ -94,8 +102,8 @@ protected:
 
 	DirectX::SimpleMath::Vector3 _angle;
 
-	// 弾丸の速度ベクトル
-	DirectX::SimpleMath::Vector3 _bulletVel;
+	// プレイヤーの速度ベクトル
+	DirectX::SimpleMath::Vector3 _carVelocity;
 
 	int cnt = 0;
 

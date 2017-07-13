@@ -15,6 +15,8 @@
 #include "SpriteFont.h"
 #include "CommonStates.h"
 
+#include <GamePad.h>
+
 //////////////////////////////
 // グローバル変数			//
 //////////////////////////////
@@ -47,6 +49,9 @@ namespace DXTK
 
 		// スプライトフォント
 		std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
+
+		// ゲームパッド
+		std::unique_ptr<DirectX::GamePad> m_gamePad;
 
 	private:
 		friend class Singleton<DXTKResources>;
