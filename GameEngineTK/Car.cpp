@@ -128,7 +128,7 @@ void Car::Update()
 	
 	if (gamepadState.IsConnected())
 	{
-		// Aキー
+		// Aキーが押されたら
 		if (gamepadState.IsAPressed())
 		{
 			// 加速
