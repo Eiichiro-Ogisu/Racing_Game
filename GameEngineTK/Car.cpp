@@ -56,6 +56,11 @@ void Car::Initialize()
 	_carSpeed = 0.0f;
 
 	_isMove = false;
+
+	// DXTKを管理するインスタンスを取得
+	DXTK::DXTKResources& dxtk = DXTK::DXTKResources::singleton();
+
+	dxtk.m_buttons.Reset();
 }
 
 /// <summary>
@@ -66,7 +71,12 @@ void Car::Update()
 	// DXTKを管理するインスタンスを取得
 	DXTK::DXTKResources& dxtk = DXTK::DXTKResources::singleton();
 
-	dxtk.UpdateInputState();
+	// キーボードの状態(多分こっち使う)
+	auto state = dxtk.m_gamePad->GetState(0);
+
+	dxtk.m_buttons.Update(state);
+
+	//dxtk.UpdateInputState();
 
 	// キ-ボードの状態
 	Keyboard::State keyboardState = dxtk.m_keyboard->GetState();
@@ -128,8 +138,8 @@ void Car::Update()
 	
 	if (gamepadState.IsConnected())
 	{
-		// Aキーが押されたら
-		if (gamepadState.IsAPressed())
+		// Aボタンが押されたら
+		if (dxtk.m_buttons.a)
 		{
 			// 加速
 			Acceleration();
@@ -149,6 +159,12 @@ void Car::Update()
 			_obj[CAR_BODY].SetTransform(pos += carVelocity);
 
 			_isMove = true;
+		}
+
+		// Aボタンが離されたら
+		if (dxtk.m_buttons.a == GamePad::ButtonStateTracker::RELEASED)
+		{
+			_carSpeed = 0.0f;
 		}
 
 		if (_isMove)

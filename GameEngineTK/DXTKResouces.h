@@ -53,6 +53,8 @@ namespace DXTK
 		// ゲームパッド
 		std::unique_ptr<DirectX::GamePad> m_gamePad;
 
+		DirectX::GamePad::ButtonStateTracker m_buttons;
+
 	private:
 		friend class Singleton<DXTKResources>;
 
