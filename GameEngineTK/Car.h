@@ -14,12 +14,15 @@ class Car
 public:
 
 	// 移動初速
-	const float MOVE_SPEED_FIRST = 0.01f;
+	const float MOVE_SPEED_FIRST = 0.001f;
 
 	// 移動初速<m/frame>
 	const float MOVE_SPEED_MAX = 0.03f;
 	// 減速値
 	const float DECELERATION_VALUE = 0.995f;
+
+	// バックの速度
+	const float BACK_SPEED = 0.02f;
 
 	// 自機パーツ
 	enum CAR_PARTS
@@ -101,7 +104,9 @@ public:
 
 	void AddSpeed();
 
-	void SteeringOperation();
+	void SteeringOperation(bool moveState);
+
+	void BackMove();
 
 protected:
 	// パーツ
@@ -116,10 +121,10 @@ protected:
 	float _carSpeed;
 
 	// _carSpeedに加速情報が入っているかどうか
-	bool _isMove;
+	bool _isForwordMove;
 
-	// ブレーキを踏んでいるかどうか
-	bool _isBreaking;
+	// バックしているかどうか
+	bool _isBackMove;
 
 	int cnt = 0;
 

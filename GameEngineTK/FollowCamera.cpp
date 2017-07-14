@@ -5,7 +5,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 // 静的メンバ変数の初期化
-const float FollowCamera::CAMERA_DISTANCE = 5.0f;
+const float FollowCamera::CAMERA_DISTANCE = 3.0f;
 
 FollowCamera::FollowCamera(int width, int height)
 	:Camera(width,height)
@@ -73,8 +73,8 @@ void FollowCamera::Update()
 
 	if (isFPS != true)
 	{
-		// 自機の上空2mを参照点とする
-		refpos = _targetPos + Vector3(0, 2, 0);
+		// 自機の上空1mを参照点とする
+		refpos = _targetPos + Vector3(0, 1, 0);
 
 		// 参照点と視点の差分のベクトル
 		Vector3 cameraV(0, 0, CAMERA_DISTANCE);
@@ -89,9 +89,9 @@ void FollowCamera::Update()
 		eyepos = refpos + cameraV;
 
 		// ゴム紐カメラ
-		eyepos = m_eyePos + (eyepos - m_eyePos) *0.8f;
+		eyepos = m_eyePos + (eyepos - m_eyePos)/* * 0.9f*/;
 
-		refpos = m_refPos + (refpos - m_refPos)* 0.5f;
+		refpos = m_refPos + (refpos - m_refPos) /** 0.8f*/;
 	}
 	SetEyePos(eyepos);
 

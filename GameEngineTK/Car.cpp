@@ -37,27 +37,18 @@ void Car::Initialize()
 	// 親からのオフセット
 	// ボディの座標をいい感じの位置に
 	_obj[CAR_BODY].SetTransform(Vector3(0, 0, 0));
-	_obj[CAR_BODY].SetScale(Vector3(0.02f, 0.02f, 0.02f));
+	_obj[CAR_BODY].SetScale(Vector3(0.01f, 0.01f, 0.01f));
 
 	//_obj[CAR_BODY].SetRotation(Vector3(0.0f, 180.0f, 0.0f));
 
 	// 足をいい感じに
 	_obj[CAR_TIRE].SetScale(Vector3(1.0f, 1.0f, 1.0f));
 
-	// TODO
-		//{// 弾丸用の当たり判定を設定
-		//_collisionNodeBullet.Initialize();
-		//		// 親パーツを指定
-		//_collisionNodeBullet.SetParent(&_obj[PLAYER_PARTS_HAND]);
-		//_collisionNodeBullet.SetTrans(Vector3(0, 0, 0));
-		//_collisionNodeBullet.SetLocalRadius(0.5f);
-		//}
-
 	_carSpeed = 0.0f;
 
-	_isMove = false;
+	_isForwordMove = false;
 
-	_isBreaking = false;
+	_isBackMove = false;
 
 	// DXTKを管理するインスタンスを取得
 	DXTK::DXTKResources& dxtk = DXTK::DXTKResources::singleton();
@@ -148,7 +139,7 @@ void Car::Update()
 		}
 
 		// 移動しているなら減速をかける
-		if (_isMove && !dxtk.m_buttons.a/* == !GamePad::ButtonStateTracker::PRESSED*/)
+		if (_isForwordMove && !dxtk.m_buttons.a/* == !GamePad::ButtonStateTracker::PRESSED*/)
 		{
 			// 車の速度を徐々に落としていく
 			Deceleration();
@@ -157,20 +148,43 @@ void Car::Update()
 		/// <summary>
 		/// 移動中に行われる処理
 		/// </summary>
-		// 移動しているなら
-		if (_isMove)
+		// 前進移動しているなら
+		if (_isForwordMove)
 		{
+			//if(!dxtk.m_buttons.b)
 			AddSpeed();
 
-			// 移動しているときのみ回転可能に
-			SteeringOperation();
+			// 前進移動を呼び出す
+			SteeringOperation(true);
+		}
+
+		/// <summary>
+		/// バック処理
+		/// </summary>
+		// bボタンでバック
+		if (!_isForwordMove && !dxtk.m_buttons.x && dxtk.m_buttons.b)
+		{
+			_isBackMove = true;
+			BackMove();
+		}
+
+		// 後退移動フラグが立っているなら後退移動を呼び出す
+		if (_isBackMove)
+		{
+			SteeringOperation(false);
+		}
+
+		// bボタンが離されたらバック移動フラグを下ろす
+		if (!_isForwordMove && dxtk.m_buttons.b == GamePad::ButtonStateTracker::RELEASED)
+		{
+			_isBackMove = false;
 		}
 
 		/// <summary>
 		/// ブレーキ処理
 		/// </summary>
 		// xボタンでブレーキ
-		if (_isMove && dxtk.m_buttons.x/* == GamePad::ButtonStateTracker::PRESSED*/)
+		if (_isForwordMove && dxtk.m_buttons.x/* == GamePad::ButtonStateTracker::PRESSED*/)
 		{
 			Breaking();
 		}
@@ -179,9 +193,9 @@ void Car::Update()
 		/// 車のスピードが一定以下になったら停止させる
 		/// </summary>
 		if (dxtk.m_buttons.a == !GamePad::ButtonStateTracker::PRESSED &&
-			_carSpeed < 0.02f && _isMove)
+			_carSpeed < 0.025f && _isForwordMove)
 		{
-			_isMove = false;
+			_isForwordMove = false;
 		}
 	}
 	
@@ -267,7 +281,7 @@ void Car::Acceleration()
 	_carSpeed += MOVE_SPEED_FIRST;
 
 	// 移動フラグオンに
-	_isMove = true;
+	_isForwordMove = true;
 }
 
 /// <summary>
@@ -276,7 +290,7 @@ void Car::Acceleration()
 void Car::Breaking()
 {
 	// TODO: ブレーキの実装
-	_carSpeed *= 0.99f;
+	_carSpeed *= 0.98f;
 }
 
 /// <summary>
@@ -314,7 +328,8 @@ void Car::AddSpeed()
 /// <summary>
 /// 車のハンドル制御
 /// </summary>
-void Car::SteeringOperation()
+/// <param name="moveState">true:前進移動,false:後退移動</param>
+void Car::SteeringOperation(bool moveState)
 {
 	// DXTKを管理するインスタンスを取得
 	DXTK::DXTKResources& dxtk = DXTK::DXTKResources::singleton();
@@ -325,7 +340,40 @@ void Car::SteeringOperation()
 	// 左側スティックの左右入力
 	float dirX = state.thumbSticks.leftX;
 
-	// 回転量
+	if (moveState)
+	{
+		// 回転量
+		float angle = _obj[CAR_BODY].GetRotation().y;
+		_obj[CAR_BODY].SetRotation(Vector3(0, angle - dirX *0.01f, 0));
+	}
+	else if (!moveState)
+	{
+		// 回転量
+		float angle = _obj[CAR_BODY].GetRotation().y;
+		_obj[CAR_BODY].SetRotation(Vector3(0, angle - dirX *0.005f, 0));
+	}
+}
+
+/// <summary>
+/// バック処理
+/// </summary>
+void Car::BackMove()
+{
+	// 進行方向ベクトルの設定
+	Vector3 moveVec = Vector3(0.0f, 0.0f, 1.0f);
+
+	// 回転取得
 	float angle = _obj[CAR_BODY].GetRotation().y;
-	_obj[CAR_BODY].SetRotation(Vector3(0, angle - dirX *0.01f, 0));
+
+	// ワールド座標系に変換
+	Matrix rotmat = Matrix::CreateRotationY(angle);
+
+	moveVec = Vector3::TransformNormal(moveVec, rotmat);
+
+	Vector3 carVelocity = moveVec * BACK_SPEED;
+
+	// 自機移動
+	Vector3 pos = _obj[CAR_BODY].GetTranslation();
+
+	_obj[CAR_BODY].SetTransform(pos += carVelocity);
 }
