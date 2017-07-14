@@ -115,11 +115,16 @@ protected:
 	// プレイヤーの速度ベクトル
 	float _carSpeed;
 
+	// _carSpeedに加速情報が入っているかどうか
+	bool _isMove;
+
+	// ブレーキを踏んでいるかどうか
+	bool _isBreaking;
+
 	int cnt = 0;
 
 	bool isFire = false;
 
-	bool _isMove;
 
 	// 弾丸用の当たり判定
 	SphereNode _collisionNodeBullet;

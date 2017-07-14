@@ -69,20 +69,6 @@ void FollowCamera::Update()
 		// 参照点
 		refpos = position + cameraV;
 
-		//// カメラ座標を計算
-		//eyepos = _targetPos + Vector3(0, 0.3, 0);
-
-		//// 前方移動用ベクトル
-		//Vector3 cameraV(0, 0, -CAMERA_DISTANCE);
-
-		//Matrix rotmat = Matrix::CreateRotationY(_targetAngle);
-
-		//cameraV = Vector3::TransformNormal(cameraV, rotmat);
-
-		//eyepos = position + cameraV *0.1f;
-
-		//// 参照点の設定
-		//refpos = position + cameraV;
 	}
 
 	if (isFPS != true)
@@ -103,9 +89,9 @@ void FollowCamera::Update()
 		eyepos = refpos + cameraV;
 
 		// ゴム紐カメラ
-		eyepos = m_eyePos + (eyepos - m_eyePos) *0.05f;
+		eyepos = m_eyePos + (eyepos - m_eyePos) *0.8f;
 
-		refpos = m_refPos + (refpos - m_refPos)* 0.2f;
+		refpos = m_refPos + (refpos - m_refPos)* 0.5f;
 	}
 	SetEyePos(eyepos);
 

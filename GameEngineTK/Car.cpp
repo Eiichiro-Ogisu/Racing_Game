@@ -37,7 +37,7 @@ void Car::Initialize()
 	// 親からのオフセット
 	// ボディの座標をいい感じの位置に
 	_obj[CAR_BODY].SetTransform(Vector3(0, 0, 0));
-	_obj[CAR_BODY].SetScale(Vector3(0.025f, 0.025f, 0.025f));
+	_obj[CAR_BODY].SetScale(Vector3(0.02f, 0.02f, 0.02f));
 
 	//_obj[CAR_BODY].SetRotation(Vector3(0.0f, 180.0f, 0.0f));
 
@@ -56,6 +56,8 @@ void Car::Initialize()
 	_carSpeed = 0.0f;
 
 	_isMove = false;
+
+	_isBreaking = false;
 
 	// DXTKを管理するインスタンスを取得
 	DXTK::DXTKResources& dxtk = DXTK::DXTKResources::singleton();
@@ -145,46 +147,55 @@ void Car::Update()
 			Acceleration();
 		}
 
+		// 移動しているなら減速をかける
+		if (_isMove && !dxtk.m_buttons.a/* == !GamePad::ButtonStateTracker::PRESSED*/)
+		{
+			// 車の速度を徐々に落としていく
+			Deceleration();
+		}
+
+		/// <summary>
+		/// 移動中に行われる処理
+		/// </summary>
+		// 移動しているなら
+		if (_isMove)
+		{
+			AddSpeed();
+
+			// 移動しているときのみ回転可能に
+			SteeringOperation();
+		}
+
+		/// <summary>
+		/// ブレーキ処理
+		/// </summary>
+		// xボタンでブレーキ
+		if (_isMove && dxtk.m_buttons.x/* == GamePad::ButtonStateTracker::PRESSED*/)
+		{
+			Breaking();
+		}
+
+		/// <summary>
+		/// 車のスピードが一定以下になったら停止させる
+		/// </summary>
+		if (dxtk.m_buttons.a == !GamePad::ButtonStateTracker::PRESSED &&
+			_carSpeed < 0.02f && _isMove)
+		{
+			_isMove = false;
+		}
 	}
 	
-	/// <summary>
-	/// 移動中に行われる処理
-	/// </summary>
-	// 移動しているなら
-	if (_isMove)
-	{
-		AddSpeed();
-
-		// 移動しているときのみ回転可能に
-		SteeringOperation();
-	}
-
-	// 移動しているなら減速をかける
-	if (_isMove && dxtk.m_buttons.a == !GamePad::ButtonStateTracker::PRESSED)
-	{
-		// 車の速度を徐々に落としていく
-		Deceleration();
-	}
-
-	/// <summary>
-	/// 車のスピードが一定以下になったら停止させる
-	/// </summary>
-	if (dxtk.m_buttons.a == !GamePad::ButtonStateTracker::PRESSED &&
-		_carSpeed < 0.02f && _isMove)
-	{
-		_isMove = false;
-	}
 
 	// 当たり判定の更新
-	_collisionNodeBullet.Update();
+	//_collisionNodeBullet.Update();
 
 
-	if (keyboardState.Space)
-	{
-		FireBullet();
+	//if (keyboardState.Space)
+	//{
+	//	FireBullet();
 
-		isFire = true;
-	}
+	//	isFire = true;
+	//}
 
 	Calc();
 }
@@ -265,7 +276,7 @@ void Car::Acceleration()
 void Car::Breaking()
 {
 	// TODO: ブレーキの実装
-	//_carSpeed = 0.0f;
+	_carSpeed *= 0.99f;
 }
 
 /// <summary>
