@@ -131,8 +131,8 @@ void Car::Update()
 	
 	if (state.IsConnected())
 	{
-		// Aボタンが押されたら
-		if (dxtk.m_buttons.a)
+		// Aボタンが押されていないかつxが押されていなければ)
+		if (dxtk.m_buttons.a && !dxtk.m_buttons.x)
 		{
 			// 加速
 			Acceleration();
