@@ -198,19 +198,6 @@ void Car::Update()
 			_isForwordMove = false;
 		}
 	}
-	
-
-	// “–‚½‚è”»’è‚ÌXV
-	//_collisionNodeBullet.Update();
-
-
-	//if (keyboardState.Space)
-	//{
-	//	FireBullet();
-
-	//	isFire = true;
-	//}
-
 	Calc();
 }
 

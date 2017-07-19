@@ -11,6 +11,7 @@
 #include "FollowCamera.h"
 #include "Obj3d.h"
 #include "Car.h"
+#include "Stage.h"
 #include "LandShape.h"
 
 #include <PrimitiveBatch.h>		// PrimitiveBatch
@@ -28,20 +29,6 @@
 class Game
 {
 public:
-
-	//// 自機パーツ
-	//enum PLAYER_PARTS
-	//{
-	//	PLAYER_PARTS_LEG,
-	//	PLAYER_PARTS_BODY,
-	//	PLAYER_PARTS_BATTERY,
-	//	PLAYER_PARTS_BATTERY2,
-	//	PLAYER_PARTS_HAND,
-	//	PLAYER_PARTS_HAND2,
-	//	PLAYER_PARTS_HEAD,
-
-	//	PLAYER_PARTS_NUM
-	//};
 
     Game();
 
@@ -116,8 +103,6 @@ private:
 	// 天球モデル
 	Obj3d m_objSkydome;
 
-	//std::unique_ptr<DirectX::Model> m_modelHead;
-
 	// モデル
 	std::unique_ptr<DirectX::Model> m_skydome2;
 
@@ -128,8 +113,6 @@ private:
 	DirectX::SimpleMath::Matrix m_worldBall[10];
 
 	DirectX::SimpleMath::Matrix m_worldBall2[10];
-
-	//DirectX::SimpleMath::Matrix m_worldGround;
 
 	// ティーポットワールド行列
 	DirectX::SimpleMath::Matrix m_worldTeapot[20];
@@ -156,18 +139,14 @@ private:
 
 	DirectX::SimpleMath::Matrix transBuf[20];
 
+	// 車
 	std::unique_ptr<Car> _car;
 
-	// 自機の座標
-	DirectX::SimpleMath::Vector3 tankPos;
-
-	float tankRot = 0.0f;
+	// ステージ
+	std::unique_ptr<Stage> m_stage;
 
 	// カメラ
 	std::unique_ptr<FollowCamera> m_camera;
-
-	//// 敵
-	//std::vector<std::unique_ptr<Enemy>> _enemies;
 
 	// 地形
 	LandShape m_landShape;

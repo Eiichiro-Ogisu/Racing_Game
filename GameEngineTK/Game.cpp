@@ -1,16 +1,20 @@
 //
 // Game.cpp
 //
-
+#include <iostream>
+#include <fstream>
 #include "pch.h"
 #include "Game.h"
 #include "ModelEffect.h"
+#include <Windows.h>
 
 extern void ExitGame();
 
 using namespace DirectX;
 
 using namespace DirectX::SimpleMath;
+
+using namespace std;
 
 using Microsoft::WRL::ComPtr;
 
@@ -66,19 +70,8 @@ void Game::Initialize(HWND window, int width, int height)
 	// プレイヤーの生成 
 	_car = std::make_unique<Car>();
 
-	//// 敵の生成
-	//int enemyNum = rand() % 10 + 1;
 
-	//_enemies.resize(enemyNum);
-
-	//for (int i = 0; i < enemyNum; i++)
-	//{
-	//	_enemies[i] = std::make_unique<Enemy>();
-
-	//	_enemies[i]->Initialize();
-	//}
-
-	 //エフェクトファクトリ生成
+	//エフェクトファクトリ生成
 	m_factory = std::make_unique<EffectFactory>(m_d3dDevice.Get());
 
 	//テクスチャの読み込みパス指定
@@ -90,6 +83,17 @@ void Game::Initialize(HWND window, int width, int height)
 	m_objSkydome.LoadModel(L"Resources\\Skydome.cmo");
 
 	m_skydome2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\Skydome2.cmo", *m_factory);
+
+	/// csvファイル取得
+	const string csv_file = "mapData\\testMap.csv";		// csvファイル
+
+	vector<vector<string>> data;
+
+	// ステージの生成
+	m_stage = std::make_unique<Stage>(csv_file);
+
+	// csvファイルの内容の取得
+	m_stage->LoadMapData(data);
 }
 
 // Executes the basic game loop.
@@ -121,55 +125,6 @@ void Game::Update(DX::StepTimer const& timer)
 	//elapsedTime;
 
 	_car->Update();
-
-	//for (std::vector<std::unique_ptr<Enemy>>::iterator it = _enemies.begin();
-	//	it != _enemies.end();
-	//	it++)
-	//{
-	//	(*it)->Update();
-	//}
-
-	//{
-	//	// 弾丸と敵の当たり判定
-	//	const Sphere& bulletSphere = _car->GetCollisionNodeBullet();
-
-	//	// 敵の数だけ処理
-	//	for (std::vector<std::unique_ptr<Enemy>>::iterator it = _enemies.begin();
-
-	//		it != _enemies.end();
-	//		)
-	//	{
-	//		Enemy* enemy = it->get();
-
-	//		const Sphere& enemySphere = enemy->GetCollisionNodeBody();
-	//		
-	//		if (CheckSphere2Sphere(bulletSphere, enemySphere))
-	//		{
-	//			ModelEffectManager::getInstance()->Entry(
-	//				L"Resources/hit_effect.cmo",
-	//				20 ,
-	//				enemy->GetPosition(),		// ワールド座標
-	//				Vector3(0, 0, 0),	// 速度
-	//				Vector3(0, 0, 0),	// 加速度
-	//				Vector3(0, 0, 0),	// 回転角（初期）
-	//				Vector3(0, 0, 0),	// 回転角（最終）
-	//				Vector3(0, 0, 0),	// スケール（初期）
-	//				Vector3(2, 2, 2)	// スケール（最終）
-	//			);
-
-	//			// 敵を殺す
-	//			// eraseした要素の次の要素を指すイテレータ
-	//			it = _enemies.erase(it);
-
-	//			//it++;
-	//		}
-	//		else
-	//		{
-	//			// イテレータを1つ進める
-	//			it++;
-	//		}
-	//	}
-	//}
 
 	{// 自機に追従するカメラ
 		m_camera->SetTargetPos(_car->GetPosition());
@@ -250,34 +205,34 @@ void Game::Update(DX::StepTimer const& timer)
 	m_angle++;
 
 
-	if (m_scale2 >= 300)
-	{
-		scaleFlag = false;
-	}
-	else if (m_scale2 <= 0)
-	{
-		scaleFlag = true;
-	}
+	//if (m_scale2 >= 300)
+	//{
+	//	scaleFlag = false;
+	//}
+	//else if (m_scale2 <= 0)
+	//{
+	//	scaleFlag = true;
+	//}
 
-	if (scaleFlag == false)
-	{
-		m_scale2--;
-	}
-	else if(scaleFlag == true)
-	{
-		m_scale2++;
-	}
+	//if (scaleFlag == false)
+	//{
+	//	m_scale2--;
+	//}
+	//else if(scaleFlag == true)
+	//{
+	//	m_scale2++;
+	//}
 
-	m_scale = Matrix::CreateScale(m_scale2 / 60);
+	//m_scale = Matrix::CreateScale(m_scale2 / 60);
 
-	Matrix translation;
+	//Matrix translation;
 
-	Matrix transRotY = Matrix::CreateRotationY(XMConvertToRadians(m_angle));
+	//Matrix transRotY = Matrix::CreateRotationY(XMConvertToRadians(m_angle));
 
-	if (worldTimer >= 0)
-	{
-		worldTimer -= 0.1 / 60;
-	}
+	//if (worldTimer >= 0)
+	//{
+	//	worldTimer -= 0.1 / 60;
+	//}
 
 	ModelEffectManager::getInstance()->Update();
 

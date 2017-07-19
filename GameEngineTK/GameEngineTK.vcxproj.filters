@@ -22,6 +22,7 @@
     <ClInclude Include="LandShape.h" />
     <ClInclude Include="LandShapeData.h" />
     <ClInclude Include="Car.h" />
+    <ClInclude Include="Stage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -38,6 +39,7 @@
     <ClCompile Include="LandShape.cpp" />
     <ClCompile Include="LandShapeData.cpp" />
     <ClCompile Include="Car.cpp" />
+    <ClCompile Include="Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -75,6 +77,9 @@
       <Filter>Assets</Filter>
     </MeshContentTask>
     <MeshContentTask Include="Assets\body.FBX">
+      <Filter>Assets</Filter>
+    </MeshContentTask>
+    <MeshContentTask Include="Assets\stageBox.FBX">
       <Filter>Assets</Filter>
     </MeshContentTask>
   </ItemGroup>
