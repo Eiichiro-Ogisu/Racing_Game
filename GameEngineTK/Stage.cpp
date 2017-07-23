@@ -51,14 +51,14 @@ void Stage::Update()
 /// <summary>
 /// 描画処理
 /// </summary>
-void Stage::Draw(vector<string>)
+void Stage::Draw(vector<string> mapData)
 {
-	//for (vector<Obj3d>::iterator it = m_stageObj.begin();
-	//	it != m_stageObj.end();
-	//	it++)
-	//{
-	//	it->Draw();
-	//}
+	for (vector<vector<Obj3d>>::iterator it = m_stageObj.begin();
+		it != m_stageObj.end();
+		it++)
+	{
+		
+	}
 }
 
 /// <summary>
@@ -76,46 +76,73 @@ void Stage::SetCsvFile(const std::string csvFile)
 /// <param name="data">1行分データ</param>
 /// <param name="delim">デリミッタ</param>
 /// <returns>マップデータの配列</returns>
-vector<string> Stage::GetMapData(const char delim)
+void Stage::GetMapData(const char delim)
 {
 	// ファイルオープン
-	fstream filestream(m_csvFile);
+	ifstream ifs(m_csvFile);
 
 	// 開けなかったら終了
-	if (!filestream.is_open())
+	if (!ifs)
 	{
 		exit(1);
 	}
 
 	// ファイルから読み込んだ1行の文字列をデリミッタで分けてリストに追加
-	vector<string> record;				// 1行分の文字列リスト
-	// ファイルの読み込み
-	while (!filestream.eof())
-	{
+	
+	vector<vector<int>> record;					// 完成したデータ配列
 
+	vector<int> lineRecord;				// 1行分の文字列リスト
+	// ファイルの読み込み
+	while (!ifs.eof())
+	{
 		char c;
 		string msg = "";
 
-		while (filestream.get(c)) {
-			if (c != '\n') {
-				msg += c;
-			}
-			else {
-				msg += ',';
-			}
-		}
-		// 1行分バッファ
+		//
+		istringstream iss(msg);
+
 		string tmp;
 
+		while (getline(ifs,tmp))
+		{
+			string token;
 
-		istringstream iss(msg);
-		while (getline(iss, tmp, delim))
-		
-		// 1セル分の文字列をリストに追加
-		record.push_back(tmp);
+			istringstream stream(tmp);
 
+			while (getline(stream,token,delim))
+			{
+				int temp = stof(token);
+
+				lineRecord.push_back(temp);
+			}
+			record.push_back(lineRecord);
+			lineRecord.clear();
+
+		}
+
+
+		//while (filestream.get(c)) 
+		//{
+		//	if (c != '\n') {
+		//		msg += c;
+		//	}
+		//	else {
+		//		msg += ',';
+		//	}
+		//}
+
+		//// 1行分バッファ
+		//string tmp;
+
+		//istringstream iss(msg);
+
+		//while (getline(iss, tmp, delim))
+		//{
+		//	// 1セル分の文字列をリストに追加
+		//	record.push_back(tmp);
+		//}
 	}
-	return record;
+	m_data = record;
 }
 
 Stage::~Stage()

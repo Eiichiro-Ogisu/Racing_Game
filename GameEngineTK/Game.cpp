@@ -101,22 +101,19 @@ void Game::Initialize(HWND window, int width, int height)
 	//csv.push_back("•¶Žš—ñ‚R,•¶Žš—ñ‚S");
 	//csv.push_back("•¶Žš—ñ‚T,•¶Žš—ñ‚U");
 
-	vector<vector<string>> data;
+	//data.reserve(csv.size());
 
-	data.reserve(csv.size());
+	//data.push_back(m_stage->GetMapData(','));
 
-	for (int i = 0; i < csv.size(); i++)
-	{
-		data.push_back(m_stage->GetMapData(','));
-	}
+	//for (size_t i = 0; i < data.size(); ++i)
+	//{
+	//	for (size_t j = 0; j < data[i].size(); ++j)
+	//	{
 
-	for (size_t i = 0; i < data.size(); ++i)
-	{
-		for (size_t j = 0; j < data[i].size(); ++j)
-		{
+	//	}
+	//}
+	m_stage->GetMapData();
 
-		}
-	}
 	exit(0);
 }
 
@@ -311,7 +308,7 @@ void Game::Render()
 	_car->Draw();
 
 	// ƒXƒe[ƒW‚Ì•`‰æ
-	m_stage->Draw();
+	//m_stage->Draw();
 
 	ModelEffectManager::getInstance()->Draw();
 

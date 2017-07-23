@@ -34,6 +34,10 @@ private:
 	// 座標
 	DirectX::SimpleMath::Vector3 m_position;
 
+	// マップデータ
+	std::vector<std::vector<int>> m_data;
+
+
 public:
 	// コンストラクタ
 	Stage(/*std::string csvFile*/);
@@ -45,13 +49,13 @@ public:
 	void Update();
 
 	// 描画処理
-	void Draw(std::vector<std::string>);
+	void Draw(std::vector<std::string> mapData);
 
 	// CSVファイルセット用関数
 	void SetCsvFile(const std::string csvFile);
 
 	// マップデータ取得
-	std::vector<std::string> GetMapData(const char delim = ',');
+	void GetMapData(const char delim = ',');
 
 	~Stage();
 };

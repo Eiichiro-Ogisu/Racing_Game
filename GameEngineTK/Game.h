@@ -150,4 +150,7 @@ private:
 
 	// 地形
 	LandShape m_landShape;
+
+	//// マップデータ
+	//std::vector<std::vector<int>> data;
 };
