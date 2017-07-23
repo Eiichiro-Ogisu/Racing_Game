@@ -11,7 +11,6 @@
 #include "pch.h"
 #include "Stage.h"
 
-#include<iostream>
 #include<string>
 
 using namespace std;
@@ -23,9 +22,12 @@ using namespace DirectX::SimpleMath;
 /// コンストラクタ
 /// </summary>
 /// <param name="csvFile">CSVファイル名</param>
-Stage::Stage(string csvFile)
+Stage::Stage(/*string csvFile*/)
 {
-	this->m_csvFile = csvFile;
+	//this->m_csvFile = csvFile;
+
+	//// 初期化呼び出し
+	//Initialize();
 }
 
 /// <summary>
@@ -33,12 +35,12 @@ Stage::Stage(string csvFile)
 /// </summary>
 void Stage::Initialize()
 {
-	// モデルの読み込み
-	m_stageObj.resize(1);
-	m_stageObj[0].LoadModel(L"Resources\\stageBox.cmo");
+	//// モデルの読み込み
+	//m_stageObj.resize(1);
+	//m_stageObj[0][].LoadModel(L"Resources\\stageBox.cmo");
 
-	// 座標の設定
-	m_stageObj[0].SetTransform(Vector3(0, 0, 0));
+	//// 座標の設定
+	//m_stageObj[0][].SetTransform(Vector3(0, 0, 0));
 }
 /// <summary>
 /// 更新処理
@@ -49,23 +51,32 @@ void Stage::Update()
 /// <summary>
 /// 描画処理
 /// </summary>
-void Stage::Draw()
+void Stage::Draw(vector<string>)
 {
-	for (vector<Obj3d>::iterator it = m_stageObj.begin();
-		it != m_stageObj.end();
-		it++)
-	{
-		it->Draw();
-	}
+	//for (vector<Obj3d>::iterator it = m_stageObj.begin();
+	//	it != m_stageObj.end();
+	//	it++)
+	//{
+	//	it->Draw();
+	//}
 }
 
 /// <summary>
-/// CSV読込
+/// csvファイルの設定
 /// </summary>
-/// <param name=""></param>
+/// <param name="csvFile"></param>
+void Stage::SetCsvFile(const std::string csvFile)
+{
+	m_csvFile = csvFile;
+}
+
+/// <summary>
+/// csv読み込み
+/// </summary>
+/// <param name="data">1行分データ</param>
 /// <param name="delim">デリミッタ</param>
-/// <returns>true:成功,false:失敗</returns>
-bool Stage::LoadMapData(vector<vector<string>>& data, const char delim)
+/// <returns>マップデータの配列</returns>
+vector<string> Stage::GetMapData(const char delim)
 {
 	// ファイルオープン
 	fstream filestream(m_csvFile);
@@ -73,35 +84,39 @@ bool Stage::LoadMapData(vector<vector<string>>& data, const char delim)
 	// 開けなかったら終了
 	if (!filestream.is_open())
 	{
-		return false;
+		exit(1);
 	}
 
+	// ファイルから読み込んだ1行の文字列をデリミッタで分けてリストに追加
+	vector<string> record;				// 1行分の文字列リスト
 	// ファイルの読み込み
 	while (!filestream.eof())
 	{
-		// 1行分バッファ
-		string buffer;
 
-		// 1行読み込む
-		filestream >> buffer;
+		char c;
+		string msg = "";
 
-		// ファイルから読み込んだ1行の文字列をデリミッタで分けてリストに追加
-		vector<string> record;				// 1行分の文字列リスト
-
-		istringstream streambuffer(buffer);	// 文字列ストリーム
-
-		string token;
-
-		while (getline(streambuffer,token,delim))
-		{
-			// 1セル分の文字列をリストに追加
-			record.push_back(token);
+		while (filestream.get(c)) {
+			if (c != '\n') {
+				msg += c;
+			}
+			else {
+				msg += ',';
+			}
 		}
-		data.push_back(record);
-	}
-	return true;
-}
+		// 1行分バッファ
+		string tmp;
 
+
+		istringstream iss(msg);
+		while (getline(iss, tmp, delim))
+		
+		// 1セル分の文字列をリストに追加
+		record.push_back(tmp);
+
+	}
+	return record;
+}
 
 Stage::~Stage()
 {

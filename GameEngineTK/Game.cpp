@@ -84,16 +84,40 @@ void Game::Initialize(HWND window, int width, int height)
 
 	m_skydome2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\Skydome2.cmo", *m_factory);
 
+	// ステージ作成
+	m_stage = std::make_unique<Stage>();
+
 	/// csvファイル取得
 	const string csv_file = "mapData\\testMap.csv";		// csvファイル
 
+	// ステージのcsvデータをセット
+	m_stage->SetCsvFile(csv_file);
+
+	vector<string> csv;
+
+	csv.push_back(csv_file);
+
+	//csv.push_back("文字列１,文字列２");
+	//csv.push_back("文字列３,文字列４");
+	//csv.push_back("文字列５,文字列６");
+
 	vector<vector<string>> data;
 
-	// ステージの生成
-	m_stage = std::make_unique<Stage>(csv_file);
+	data.reserve(csv.size());
 
-	// csvファイルの内容の取得
-	m_stage->LoadMapData(data);
+	for (int i = 0; i < csv.size(); i++)
+	{
+		data.push_back(m_stage->GetMapData(','));
+	}
+
+	for (size_t i = 0; i < data.size(); ++i)
+	{
+		for (size_t j = 0; j < data[i].size(); ++j)
+		{
+
+		}
+	}
+	exit(0);
 }
 
 // Executes the basic game loop.
@@ -281,22 +305,14 @@ void Game::Render()
 	
 	m_landShape.Draw();
 
-	//// 地面モデルの描画
-	//m_modelGround->Draw(m_d3dContext.Get(), m_states, m_world, m_view, m_proj);
-
 	m_objSkydome.Draw();
-
-	//m_modelGround->Draw(m_d3dContext.Get(), m_states, m_worldGround, m_view, m_proj);
 
 	// プレイヤーの描画
 	_car->Draw();
 
-	//for (std::vector<std::unique_ptr<Enemy>>::iterator it = _enemies.begin();
-	//	it != _enemies.end();
-	//	it++)
-	//{
-	//	(*it)->Draw();
-	//}
+	// ステージの描画
+	m_stage->Draw();
+
 	ModelEffectManager::getInstance()->Draw();
 
 	// タンクの平行移動

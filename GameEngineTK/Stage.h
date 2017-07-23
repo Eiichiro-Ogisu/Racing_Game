@@ -25,8 +25,8 @@ class Stage
 {
 private:
 
-	// ステージオブジェクト
-	std::vector<Obj3d> m_stageObj;
+	// ステージオブジェクト(vectorコンテナの二次元配列)
+	std::vector<std::vector<Obj3d>> m_stageObj;
 
 	// csvファイル名
 	std::string m_csvFile;
@@ -36,7 +36,7 @@ private:
 
 public:
 	// コンストラクタ
-	Stage(std::string csvFile);
+	Stage(/*std::string csvFile*/);
 
 	// 初期化処理
 	void Initialize();
@@ -45,10 +45,13 @@ public:
 	void Update();
 
 	// 描画処理
-	void Draw();
+	void Draw(std::vector<std::string>);
+
+	// CSVファイルセット用関数
+	void SetCsvFile(const std::string csvFile);
 
 	// マップデータ取得
-	bool LoadMapData(std::vector<std::vector<std::string>>& data, const char delim = ',');
+	std::vector<std::string> GetMapData(const char delim = ',');
 
 	~Stage();
 };
