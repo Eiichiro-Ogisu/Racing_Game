@@ -55,7 +55,7 @@ public:
 	void SetCsvFile(const std::string csvFile);
 
 	// マップデータ取得
-	void GetMapData(const char delim = ',');
+	void SetMapData(const char delim = ',');
 
 	~Stage();
 };

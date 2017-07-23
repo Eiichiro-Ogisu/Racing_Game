@@ -112,7 +112,7 @@ void Game::Initialize(HWND window, int width, int height)
 
 	//	}
 	//}
-	m_stage->GetMapData();
+	m_stage->SetMapData();
 
 	exit(0);
 }

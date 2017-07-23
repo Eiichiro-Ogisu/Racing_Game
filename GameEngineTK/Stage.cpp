@@ -62,21 +62,19 @@ void Stage::Draw(vector<string> mapData)
 }
 
 /// <summary>
-/// csvファイルの設定
+/// csvファイルのセット
 /// </summary>
-/// <param name="csvFile"></param>
+/// <param name="csvFile">csvファイル</param>
 void Stage::SetCsvFile(const std::string csvFile)
 {
 	m_csvFile = csvFile;
 }
 
 /// <summary>
-/// csv読み込み
+/// マップデータをセット
 /// </summary>
-/// <param name="data">1行分データ</param>
-/// <param name="delim">デリミッタ</param>
-/// <returns>マップデータの配列</returns>
-void Stage::GetMapData(const char delim)
+/// <param name="delim">区切り文字</param>
+void Stage::SetMapData(const char delim)
 {
 	// ファイルオープン
 	ifstream ifs(m_csvFile);
@@ -89,59 +87,46 @@ void Stage::GetMapData(const char delim)
 
 	// ファイルから読み込んだ1行の文字列をデリミッタで分けてリストに追加
 	
-	vector<vector<int>> record;					// 完成したデータ配列
+	// 完成したデータ配列
+	vector<vector<int>> record;
 
-	vector<int> lineRecord;				// 1行分の文字列リスト
-	// ファイルの読み込み
+	// 1行分の文字列リスト
+	vector<int> rowRecord;
+
+	// ファイルの終了まで読み込んだかチェック
 	while (!ifs.eof())
 	{
-		char c;
-		string msg = "";
-
-		//
-		istringstream iss(msg);
-
+		// 1行分のデータ
 		string tmp;
 
+		// 1行読み込む
 		while (getline(ifs,tmp))
 		{
+			// 1文字分のデータ保持用
 			string token;
 
+			// 文字列ストリーム
 			istringstream stream(tmp);
 
+			// カンマを除いた1文字ずつ配列に格納
 			while (getline(stream,token,delim))
 			{
+				// string型をfloat 型に変換
 				int temp = stof(token);
 
-				lineRecord.push_back(temp);
+				// 1行分のデータ配列の中に1文字分格納
+				rowRecord.push_back(temp);
 			}
-			record.push_back(lineRecord);
-			lineRecord.clear();
+			// 二次元配列に1行分のデータを格納
+			record.push_back(rowRecord);
+
+			// 1行分のデータをクリア
+			rowRecord.clear();
 
 		}
-
-
-		//while (filestream.get(c)) 
-		//{
-		//	if (c != '\n') {
-		//		msg += c;
-		//	}
-		//	else {
-		//		msg += ',';
-		//	}
-		//}
-
-		//// 1行分バッファ
-		//string tmp;
-
-		//istringstream iss(msg);
-
-		//while (getline(iss, tmp, delim))
-		//{
-		//	// 1セル分の文字列をリストに追加
-		//	record.push_back(tmp);
-		//}
 	}
+
+	// マップデータに二次元配列を代入
 	m_data = record;
 }
 
