@@ -36,7 +36,7 @@ void Car::Initialize()
 
 	// 親からのオフセット
 	// ボディの座標をいい感じの位置に
-	_obj[CAR_BODY].SetTransform(Vector3(0, 0, 0));
+	_obj[CAR_BODY].SetTransform(Vector3(0, 0, 3));
 	_obj[CAR_BODY].SetScale(Vector3(0.01f, 0.01f, 0.01f));
 
 	//_obj[CAR_BODY].SetRotation(Vector3(0.0f, 180.0f, 0.0f));

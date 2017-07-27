@@ -97,24 +97,12 @@ void Game::Initialize(HWND window, int width, int height)
 
 	csv.push_back(csv_file);
 
-	//csv.push_back("•¶Žš—ñ‚P,•¶Žš—ñ‚Q");
-	//csv.push_back("•¶Žš—ñ‚R,•¶Žš—ñ‚S");
-	//csv.push_back("•¶Žš—ñ‚T,•¶Žš—ñ‚U");
-
-	//data.reserve(csv.size());
-
-	//data.push_back(m_stage->GetMapData(','));
-
-	//for (size_t i = 0; i < data.size(); ++i)
-	//{
-	//	for (size_t j = 0; j < data[i].size(); ++j)
-	//	{
-
-	//	}
-	//}
 	m_stage->SetMapData();
 
-	exit(0);
+	m_stage->Initialize();
+
+
+	//exit(0);
 }
 
 // Executes the basic game loop.
@@ -225,36 +213,6 @@ void Game::Update(DX::StepTimer const& timer)
 
 	m_angle++;
 
-
-	//if (m_scale2 >= 300)
-	//{
-	//	scaleFlag = false;
-	//}
-	//else if (m_scale2 <= 0)
-	//{
-	//	scaleFlag = true;
-	//}
-
-	//if (scaleFlag == false)
-	//{
-	//	m_scale2--;
-	//}
-	//else if(scaleFlag == true)
-	//{
-	//	m_scale2++;
-	//}
-
-	//m_scale = Matrix::CreateScale(m_scale2 / 60);
-
-	//Matrix translation;
-
-	//Matrix transRotY = Matrix::CreateRotationY(XMConvertToRadians(m_angle));
-
-	//if (worldTimer >= 0)
-	//{
-	//	worldTimer -= 0.1 / 60;
-	//}
-
 	ModelEffectManager::getInstance()->Update();
 
 	/// <summary>
@@ -264,6 +222,8 @@ void Game::Update(DX::StepTimer const& timer)
 	{
 		_shortRangeAttackRot += 0.5;
 	}
+
+	m_stage->Update();
 }
 
 // Draws the scene.
@@ -308,7 +268,7 @@ void Game::Render()
 	_car->Draw();
 
 	// ƒXƒe[ƒW‚Ì•`‰æ
-	//m_stage->Draw();
+	m_stage->Draw();
 
 	ModelEffectManager::getInstance()->Draw();
 

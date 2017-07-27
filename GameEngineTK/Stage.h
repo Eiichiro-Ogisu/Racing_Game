@@ -26,7 +26,7 @@ class Stage
 private:
 
 	// ステージオブジェクト(vectorコンテナの二次元配列)
-	std::vector<std::vector<Obj3d>> m_stageObj;
+	std::vector<Obj3d> m_stageObj;
 
 	// csvファイル名
 	std::string m_csvFile;
@@ -37,6 +37,7 @@ private:
 	// マップデータ
 	std::vector<std::vector<int>> m_data;
 
+	std::vector<int> m_mapCnt;
 
 public:
 	// コンストラクタ
@@ -49,13 +50,25 @@ public:
 	void Update();
 
 	// 描画処理
-	void Draw(std::vector<std::string> mapData);
+	void Draw();
 
 	// CSVファイルセット用関数
 	void SetCsvFile(const std::string csvFile);
 
 	// マップデータ取得
 	void SetMapData(const char delim = ',');
+
+
+
+	//// 座標を取得
+	//const DirectX::SimpleMath::Vector3& GetPosition();
+
+	//// 座標を設定
+	//void SetPosition(const DirectX::SimpleMath::Vector3& trans);
+
+	//// ワールド行列を取得
+	//const DirectX::SimpleMath::Matrix& GetLocalWorld();
+
 
 	~Stage();
 };

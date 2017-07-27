@@ -56,6 +56,23 @@ public:
 	}
 };
 
+class OBB
+{
+	// ’†SÀ•W
+	DirectX::SimpleMath::Vector3 m_center;
+
+	// ”¼Œa(x,y,z)
+	float m_radius[3];
+
+	OBB()
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			m_radius[i] = 1.0f;
+		}
+	}
+};
+
 bool CheckSphere2Sphere(const Sphere & _sphereA, const Sphere & _sphereB);
 
 void ComputeTriangle(const DirectX::SimpleMath::Vector3 & _p0, const DirectX::SimpleMath::Vector3 & _p1, const DirectX::SimpleMath::Vector3 & _p2, Triangle * _triangle);

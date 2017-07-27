@@ -28,6 +28,11 @@ Stage::Stage(/*string csvFile*/)
 
 	//// 初期化呼び出し
 	//Initialize();
+	//m_mapCnt[] = 0;
+
+	m_stageObj.resize(8);
+
+	int a = 0;
 }
 
 /// <summary>
@@ -35,29 +40,52 @@ Stage::Stage(/*string csvFile*/)
 /// </summary>
 void Stage::Initialize()
 {
-	//// モデルの読み込み
+	// モデルの読み込み
 	//m_stageObj.resize(1);
-	//m_stageObj[0][].LoadModel(L"Resources\\stageBox.cmo");
 
-	//// 座標の設定
-	//m_stageObj[0][].SetTransform(Vector3(0, 0, 0));
+	for (int i = 0; i < m_stageObj.size(); i++)
+	{
+		m_stageObj[i].LoadModel(L"Resources\\stageBox.cmo");
+
+		m_stageObj[i].SetScale(Vector3(1,1,1));
+	}
 }
 /// <summary>
 /// 更新処理
 /// </summary>
 void Stage::Update()
 {
+	for (auto it = m_stageObj.begin(); it != m_stageObj.end(); it++)
+	{
+		it->Update();
+	}
 }
 /// <summary>
-/// 描画処理
+/// 描画処理	// 時間が余れば書き直したい...
 /// </summary>
-void Stage::Draw(vector<string> mapData)
+void Stage::Draw()
 {
-	for (vector<vector<Obj3d>>::iterator it = m_stageObj.begin();
-		it != m_stageObj.end();
-		it++)
+	int i_ = 0;
+
+	int row = 0,colum = 0;
+	for (auto i = m_data.begin(); i != m_data.end(); i++)
 	{
-		
+		vector<int> v = *i;
+
+		for (auto j = v.begin(); j != v.end(); j++)
+		{
+			m_stageObj[i_].SetTransform(Vector3(colum,0,row));
+			if (m_data[row][colum] == 1)
+			{
+				int a = 0;
+				m_stageObj[i_].Draw();
+			}
+
+			colum++;
+			i_++;
+		}
+		row++;
+		colum = 0;
 	}
 }
 
