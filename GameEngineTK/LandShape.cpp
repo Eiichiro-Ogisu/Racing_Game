@@ -150,7 +150,7 @@ void LandShape::Update()
 //--------------------------------------------------------------------------------------
 void LandShape::Draw()
 {
-	if (CollisionNode::GetDebugVisible() == false)
+	if (CollisionNode::GetDebugVisible() == true)
 	{
 		// ƒ‚ƒfƒ‹•`‰æ
 		m_Obj.Draw();
