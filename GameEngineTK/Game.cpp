@@ -85,22 +85,7 @@ void Game::Initialize(HWND window, int width, int height)
 	m_skydome2 = Model::CreateFromCMO(m_d3dDevice.Get(), L"Resources\\Skydome2.cmo", *m_factory);
 
 	// ステージ作成
-	m_stage = std::make_unique<Stage>();
-
-	/// csvファイル取得
-	const string csv_file = "mapData\\testMap.csv";		// csvファイル
-
-	// ステージのcsvデータをセット
-	m_stage->SetCsvFile(csv_file);
-
-	vector<string> csv;
-
-	csv.push_back(csv_file);
-
-	m_stage->SetMapData();
-
-	m_stage->Initialize();
-
+	m_stage = std::make_unique<Stage>("mapData\\testMap.csv");
 
 	//exit(0);
 }

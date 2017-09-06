@@ -122,4 +122,6 @@ protected:
 
 	// ‘Sg—p‚Ì“–‚½‚è”»’è
 	SphereNode _collisionNodeBody;
+
+
 };

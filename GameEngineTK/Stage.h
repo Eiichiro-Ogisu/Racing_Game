@@ -11,6 +11,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <array>
 #include <d3d11_1.h>
 #include <SimpleMath.h>
 #include <Keyboard.h>
@@ -37,11 +38,13 @@ private:
 	// マップデータ
 	std::vector<std::vector<int>> m_data;
 
+	//std::array<std::array<int,0>,0> m_mapData;
+
 	std::vector<int> m_mapCnt;
 
 public:
 	// コンストラクタ
-	Stage(/*std::string csvFile*/);
+	Stage(std::string csvData);
 
 	// 初期化処理
 	void Initialize();
@@ -57,18 +60,6 @@ public:
 
 	// マップデータ取得
 	void SetMapData(const char delim = ',');
-
-
-
-	//// 座標を取得
-	//const DirectX::SimpleMath::Vector3& GetPosition();
-
-	//// 座標を設定
-	//void SetPosition(const DirectX::SimpleMath::Vector3& trans);
-
-	//// ワールド行列を取得
-	//const DirectX::SimpleMath::Matrix& GetLocalWorld();
-
 
 	~Stage();
 };

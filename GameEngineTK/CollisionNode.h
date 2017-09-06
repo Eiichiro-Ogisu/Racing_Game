@@ -56,4 +56,22 @@ class SphereNode : public CollisionNode, public Sphere
 		protected:
 				// ローカル半径
 				float m_LocalRadius;
-			};
+};
+
+/// <summary>
+/// 直方体当たり判定ノード
+/// </summary>
+class BoxNode :public CollisionNode,public OBB
+{
+public:
+	// コンストラクタ
+	BoxNode();
+	// 初期化
+	void Initialize();
+	// 更新
+	void Update();
+	// 描画
+	void Draw();
+protected:
+
+};

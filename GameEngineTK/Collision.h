@@ -58,20 +58,19 @@ public:
 
 class OBB
 {
-public:
-	// 中心座標
-	DirectX::SimpleMath::Vector3 m_center;
+	//// 中心座標
+	//DirectX::SimpleMath::Vector3 m_center;
 
-	// 半径(x,y,z)
-	float m_radius[3];
+	//// 半径(x,y,z)
+	//float m_radius[3];
 
-	OBB()
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			m_radius[i] = 1.0f;
-		}
-	}
+	//OBB()
+	//{
+	//	for (int i = 0; i < 3; i++)
+	//	{
+	//		m_radius[i] = 1.0f;
+	//	}
+	//}
 };
 
 bool CheckSphere2Sphere(const Sphere & _sphereA, const Sphere & _sphereB);

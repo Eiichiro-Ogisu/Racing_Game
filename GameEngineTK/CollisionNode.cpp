@@ -62,3 +62,46 @@ void SphereNode::Draw()
  {
 	m_Obj.Draw();
 }
+
+BoxNode::BoxNode()
+{
+}
+
+void BoxNode::Initialize()
+{
+	m_Obj.LoadModel(L"Resources\\boxNode.cmo");
+}
+
+void BoxNode::Update()
+{
+	m_Obj.SetTransform(m_Trans);
+	//m_Obj.SetScale(Vector3(m_LocalRadius));
+
+	// ワールド行列の更新
+	m_Obj.Update();
+
+	// ワールド座標での当たり判定球を計算
+	{
+		// 計算済みのワールド行列を取得
+		const Matrix& worldm = m_Obj.GetWorld();
+
+		// モデル座標系での中心点
+		Vector3 center(0, 0, 0);
+
+		// モデル座標系での右端
+		Vector3 right(1, 0, 0);
+
+		// ワールド座標に変換
+		center = Vector3::Transform(center, worldm);
+		right = Vector3::Transform(right, worldm);
+
+		// 当たり判定球に結果を代入
+		//Sphere::_center = center;
+		//Sphere::_radius = Vector3::Distance(center, right);
+	}
+}
+
+void BoxNode::Draw()
+{
+	m_Obj.Draw();
+}

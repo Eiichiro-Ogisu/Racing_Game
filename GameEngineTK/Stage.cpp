@@ -22,15 +22,13 @@ using namespace DirectX::SimpleMath;
 /// コンストラクタ
 /// </summary>
 /// <param name="csvFile">CSVファイル名</param>
-Stage::Stage(/*string csvFile*/)
+Stage::Stage(string csvData)
 {
-	//this->m_csvFile = csvFile;
+	// csvデータを代入
+	m_csvFile = csvData;
 
-	//// 初期化呼び出し
-	//Initialize();
-	//m_mapCnt[] = 0;
-
-	m_stageObj.resize(8);
+	// 初期化関数の呼び出し
+	Initialize();
 
 	int a = 0;
 }
@@ -40,15 +38,21 @@ Stage::Stage(/*string csvFile*/)
 /// </summary>
 void Stage::Initialize()
 {
-	// モデルの読み込み
-	//m_stageObj.resize(1);
+
+	SetMapData();
+
+	// ステージ格納配列のリサイズ 要修正
+	m_stageObj.resize(8);
 
 	for (int i = 0; i < m_stageObj.size(); i++)
 	{
+		// ステージモデルのロード
 		m_stageObj[i].LoadModel(L"Resources\\stageBox.cmo");
 
+		// ステージモデルのリサイズ
 		m_stageObj[i].SetScale(Vector3(1,1,1));
 	}
+
 }
 /// <summary>
 /// 更新処理

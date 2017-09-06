@@ -2,6 +2,7 @@
 /// 衝突判定ライブラリ
 /// </summary>
 #include "Collision.h"
+#include <SimpleMath.h>
 
 using namespace DirectX::SimpleMath;
 
@@ -286,34 +287,3 @@ bool CheckSegment2Triangle(const Segment& _segment, const Triangle& _triangle, V
 	return true;
 }
 
-bool CheckOBB(const OBB& _obbA, const OBB& _obbB)
-{
-	// 箱Aと箱Bの中心座標の差を計算する
-	Vector3 sub = _obbB.m_center - _obbA.m_center;
-
-	float distanceSquare;
-
-	// 三平方の定理
-	distanceSquare = sqrt(sub.x * sub.x + sub.y * sub.y + sub.z * sub.z);
-
-	float radiusSquare[3];
-
-	for (int i = 0; i < 3; i++)
-	{
-		radiusSquare[i] = _obbA.m_radius[i] + _obbB.m_radius[i];
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		radiusSquare[i] = radiusSquare[i] * radiusSquare[i];
-	}
-
-	for (int i = 0; i < 3; i++)
-	{
-		if (distanceSquare > radiusSquare[i])
-		{
-			return false;
-		}
-	}
-	return true;
-}
